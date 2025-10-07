@@ -314,6 +314,8 @@ function initPricingRobot() {
                     onComplete: () => {
                         pricingModal.classList.add('hidden');
                         document.body.style.overflow = 'auto';
+                        const mobileStack = document.getElementById('mobile-pricing-stack');
+                        if (mobileStack) mobileStack.setAttribute('aria-hidden', 'true');
                     }
                 });
             } else {
@@ -334,6 +336,21 @@ function initPricingRobot() {
     
     // Initialize package toggle functionality
     initPackageToggle();
+
+    // Show mobile pricing stack when modal opens
+    const observer = new MutationObserver(() => {
+        const mobileStack = document.getElementById('mobile-pricing-stack');
+        if (!mobileStack) return;
+        const isOpen = !pricingModal.classList.contains('hidden');
+        if (window.innerWidth < 768) {
+            mobileStack.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+            mobileStack.style.display = isOpen ? 'block' : 'none';
+        } else {
+            mobileStack.setAttribute('aria-hidden', 'true');
+            mobileStack.style.display = 'none';
+        }
+    });
+    observer.observe(pricingModal, { attributes: true, attributeFilter: ['class'] });
 }
 
 // Package Toggle Functionality

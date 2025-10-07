@@ -1066,6 +1066,22 @@ body.custom-cursor-active *:hover {
     animation-duration: 0.3s !important;
     transition-duration: 0.3s !important;
   }
+
+  /* Restore and stabilize hero energy core animations on mobile */
+  .tesseract-cube { animation-duration: 30s !important; }
+  .inner-cube { animation-duration: 24s !important; }
+  .outer-cube { animation-duration: 28s !important; }
+  .ring-1 { animation-duration: 30s !important; }
+  .ring-2 { animation-duration: 22s !important; }
+  .ring-3 { animation-duration: 35s !important; }
+
+  /* Mobile menu overlay must always be on top */
+  #mobile-menu { z-index: 99999 !important; pointer-events: auto !important; }
+
+  /* Pricing membership features: single column on mobile for readability */
+  #pricing-modal .membership-card .pp-feat { grid-template-columns: 1fr !important; margin-right: 0 !important; }
+  #pricing-modal .membership-card { gap: 0.75rem !important; }
+  #pricing-modal .membership-card .pp-cta { width: 100% !important; }
   
   /* Fix blank spaces */
   .py-32 {
