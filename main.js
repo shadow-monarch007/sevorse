@@ -49,8 +49,6 @@ const DOMCache = {
 
 // Main initialization
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 SEVORSE main.js - DOM loaded');
-    
     // Initialize core functionality
     initUtilityFunctions();
     initMobileMenu();
@@ -66,8 +64,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize supplementary features
     initGallery();
     initIORevealFallback();
-    
-    console.log('✅ SEVORSE main.js loaded successfully');
 });
 
 // Initialize scroll animations after window loads
@@ -396,10 +392,25 @@ function initMobileMenu() {
     const mobileNavItems = document.querySelectorAll('.mobile-nav-item');
     
     if (mobileMenuBtn && mobileMenu) {
+        // Prevent body scroll when menu is open
+        const toggleBodyScroll = (lock) => {
+            if (lock) {
+                document.body.style.overflow = 'hidden';
+                document.body.style.position = 'fixed';
+                document.body.style.width = '100%';
+            } else {
+                document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.width = '';
+            }
+        };
+        
         // Toggle menu on button click
         mobileMenuBtn.addEventListener('click', function(e) {
             e.stopPropagation();
+            const isOpening = mobileMenu.classList.contains('hidden');
             mobileMenu.classList.toggle('hidden');
+            toggleBodyScroll(isOpening);
             
             // Animate hamburger icon to X
             const svg = mobileMenuBtn.querySelector('svg');
@@ -414,6 +425,7 @@ function initMobileMenu() {
         mobileNavItems.forEach(item => {
             item.addEventListener('click', function() {
                 mobileMenu.classList.add('hidden');
+                toggleBodyScroll(false);
                 const svg = mobileMenuBtn.querySelector('svg');
                 svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
             });
@@ -423,6 +435,7 @@ function initMobileMenu() {
         document.addEventListener('click', function(e) {
             if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
                 mobileMenu.classList.add('hidden');
+                toggleBodyScroll(false);
                 const svg = mobileMenuBtn.querySelector('svg');
                 svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
             }
@@ -432,6 +445,7 @@ function initMobileMenu() {
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && !mobileMenu.classList.contains('hidden')) {
                 mobileMenu.classList.add('hidden');
+                toggleBodyScroll(false);
                 const svg = mobileMenuBtn.querySelector('svg');
                 svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
             }
@@ -459,7 +473,6 @@ function initSmoothScrolling() {
 function initCustomCursor() {
     // Don't initialize cursor on mobile/tablet devices or touch screens
     if (window.innerWidth <= 1024 || 'ontouchstart' in window || navigator.maxTouchPoints > 0) {
-        console.log('🔵 Custom cursor disabled on mobile/touch device');
         // Ensure cursor elements don't exist
         const existingRing = document.querySelector('.cursor-ring');
         const existingDot = document.querySelector('.cursor-dot');
@@ -467,8 +480,6 @@ function initCustomCursor() {
         if (existingDot) existingDot.remove();
         return;
     }
-    
-    console.log('🔵 Initializing custom cursor...');
     
     // Remove any existing cursor elements first (fixes stuck cursor on refresh)
     const existingRing = document.querySelector('.cursor-ring');
@@ -478,7 +489,6 @@ function initCustomCursor() {
     
     // Apply custom cursor class to body
     document.body.classList.add('custom-cursor-active');
-    console.log('🔵 Added custom-cursor-active class to body');
     
     const ring = document.createElement('div');
     const dot = document.createElement('div');
@@ -487,7 +497,6 @@ function initCustomCursor() {
     
     document.body.appendChild(ring);
     document.body.appendChild(dot);
-    console.log('🔵 Cursor elements added to DOM');
 
     let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
     let ringX = mouseX, ringY = mouseY;
@@ -499,7 +508,6 @@ function initCustomCursor() {
     ring.style.top = mouseY + 'px';
     dot.style.left = mouseX + 'px';
     dot.style.top = mouseY + 'px';
-    console.log('🔵 Initial cursor position set:', mouseX, mouseY);
 
     // Optimized mousemove handler
     document.addEventListener('mousemove', (e) => {
@@ -540,7 +548,6 @@ function initCustomCursor() {
     
     // Start animation right away
     startAnimation();
-    console.log('🔵 Cursor animation started');
     
     // Handle page visibility changes
     document.addEventListener('visibilitychange', () => {
@@ -614,8 +621,6 @@ function initCustomCursor() {
     };
 
     document.addEventListener('mousemove', updateContrast, { passive: true });
-    
-    console.log('✅ Custom cursor fully initialized and should be visible!');
 }
 
 // Magnetic Elements Effect (Optimized)
@@ -1068,7 +1073,6 @@ function initVantaRings() {
                 spacing: isMobile ? 16.00 : 15.00,
                 showDots: true
             });
-            console.log('✅ Vanta NET initialized with color:', colorHex.toString(16), isMobile ? '(mobile mode)' : '(desktop mode)');
         } else {
             setTimeout(() => createVantaEffect(colorHex), 100);
         }
@@ -1080,7 +1084,6 @@ function initVantaRings() {
             currentColorIndex = (currentColorIndex + 1) % brandColors.length;
             const newColor = brandColors[currentColorIndex];
             createVantaEffect(newColor);
-            console.log('🎨 Ring color changed to:', newColor.toString(16));
             
             // Add a quick pulse effect to WE text
             weRandomizer.style.transform = 'scale(1.1)';
@@ -1091,8 +1094,6 @@ function initVantaRings() {
         
         // Add transition for smooth scale effect
         weRandomizer.style.transition = 'transform 0.15s ease';
-        
-        console.log('✅ "WE" text randomizer attached');
     }
     
     // Intersection Observer - Load once and keep loaded (no aggressive destroy)
@@ -1101,7 +1102,6 @@ function initVantaRings() {
             // Initialize when section is visible
             if (entry.isIntersecting && !isInitialized) {
                 isInitialized = true;
-                console.log('📍 About section visible, loading Vanta...');
                 loadVantaScripts().then(() => {
                     createVantaEffect(brandColors[0]);
                 });

@@ -13,8 +13,7 @@
     <meta property="og:type" content="website">
     <link rel="icon" href="images/sevorse-logo.png" type="image/png">
     
-    <!-- Tailwind CSS - Using CDN for development -->
-    <!-- TODO: For production, install Tailwind as PostCSS plugin or use Tailwind CLI -->
+    <!-- Tailwind CSS - Using CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -44,7 +43,7 @@
     </script>
     
     <!-- Project Stylesheet -->
-    <link rel="stylesheet" href="styles.css?v=20251006-3" />
+    <link rel="stylesheet" href="styles.css?v=20251007-2" />
 
     <!-- Custom Styles -->
     <style>
@@ -835,6 +834,14 @@
             pointer-events: none;
             transform: scale(0.98);
         }
+        
+        /* Mobile: Reduce blur intensity for better readability */
+        @media (max-width: 768px) {
+            .package-card.blurred {
+                filter: blur(3px);
+                opacity: 0.7;
+            }
+        }
 
         /* Clear State - When Toggle is ON */
         .package-card:not(.blurred) {
@@ -1342,16 +1349,6 @@
         z-index: 1;
     }
     
-    #vanta-rings-bg canvas {
-        position: absolute !important;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-    }
-        z-index: 1;
-    }
-    
     /* Ensure about section content stays above Vanta canvas */
     #about .container {
         position: relative;
@@ -1396,7 +1393,7 @@
         </div>
         
         <!-- Integrated Navigation -->
-        <div class="absolute top-0 left-0 w-full z-50 px-4 md:px-6 lg:pl-12 lg:pr-24 py-4 md:py-6">
+        <div class="fixed top-0 left-0 w-full z-50 px-4 md:px-6 lg:pl-12 lg:pr-24 py-4 md:py-6 bg-gradient-to-b from-gray-950/95 via-gray-950/80 to-transparent backdrop-blur-sm transition-all duration-300" style="will-change: transform;">
             <div class="flex items-center w-full">
                 <!-- Left: Logo -->
                 <div class="flex-1">
@@ -2806,7 +2803,7 @@
     
     // DISABLED Card Stacking - Use normal scroll instead to prevent overlap
     function initCardStacking() {
-        console.log('✅ Card stacking disabled - using normal scroll for better UX');
+        // Card stacking disabled for better mobile UX
         
         // Just ensure sections have proper z-index for normal scroll
         const sections = document.querySelectorAll('.stack-card');

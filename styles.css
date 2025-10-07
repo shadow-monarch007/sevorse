@@ -38,6 +38,8 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overflow-x: hidden;
 }
 
 body {
@@ -45,6 +47,8 @@ body {
   line-height: 1.6;
   color: var(--secondary-800);
   background-color: white;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Custom cursor applied via JavaScript when supported */
@@ -886,7 +890,26 @@ body.custom-cursor-active *:hover {
   
   .pricing-wrap {
     padding: 0.5rem !important;
-    max-height: 90vh !important;
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  /* Pricing modal viewport optimization */
+  #pricing-modal {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  /* Packages row - vertical stacking on mobile */
+  .packages-row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
   }
   
   .blur-toggle-btn {
@@ -903,11 +926,27 @@ body.custom-cursor-active *:hover {
     line-height: 1.2 !important;
   }
   
-  /* Mobile navigation */
+  /* Mobile navigation - Fixed positioning */
+  #home > div:first-child {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999 !important;
+    background: linear-gradient(to bottom, rgba(3, 7, 18, 0.98) 0%, rgba(3, 7, 18, 0.9) 80%, transparent 100%);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    will-change: transform;
+    transform: translateZ(0);
+  }
+  
   #mobile-menu {
     animation: slideDown 0.3s ease-out;
-    max-height: 80vh;
+    max-height: 70vh;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    position: fixed !important;
+    z-index: 9998 !important;
   }
   
   @keyframes slideDown {
@@ -1045,6 +1084,24 @@ body.custom-cursor-active *:hover {
   section:not(#home) {
     min-height: auto !important;
     height: auto !important;
+  }
+  
+  /* Performance optimization - reduce animations on mobile */
+  * {
+    animation-duration: 0.3s !important;
+    transition-duration: 0.2s !important;
+  }
+  
+  /* Disable complex transforms on mobile for better performance */
+  .interactive-card,
+  .service-card,
+  .portfolio-item {
+    transform: none !important;
+  }
+  
+  .interactive-card:active,
+  .service-card:active {
+    transform: scale(0.98) !important;
   }
   
   /* Compact sections */
