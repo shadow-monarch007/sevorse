@@ -2860,12 +2860,12 @@
         window.addEventListener('resize', updateStoryScroll);
     })();
 
-    // Testimonials marquee animation (disabled on small screens for performance)
+    // Testimonials marquee animation (enabled on mobile now)
     document.addEventListener('DOMContentLoaded', function(){
         if (typeof gsap === 'undefined') return;
         const track = document.getElementById('testimonials-track');
         if (!track) return;
-        if (window.innerWidth < 768) return; // skip on mobile
+        // previously skipped on mobile; now we run it for all sizes
         requestAnimationFrame(() => {
             const totalWidth = track.scrollWidth / 2;
             gsap.to(track, {
@@ -2878,21 +2878,20 @@
                 }
             });
         });
-        // Re-init when resizing to desktop from mobile
+        // Re-init when resizing
         window.addEventListener('resize', window.debounce(() => {
-            if (window.innerWidth >= 768 && !track.__gsapMarqueeInit) {
-                track.__gsapMarqueeInit = true;
-                const totalWidth = track.scrollWidth / 2;
-                gsap.to(track, {
-                    x: -totalWidth,
-                    duration: 18,
-                    ease: 'none',
-                    repeat: -1,
-                    modifiers: {
-                        x: gsap.utils.unitize(x => (parseFloat(x) % -totalWidth))
-                    }
-                });
-            }
+            const totalWidth = track.scrollWidth / 2;
+            gsap.killTweensOf(track);
+            gsap.set(track, { x: 0 });
+            gsap.to(track, {
+                x: -totalWidth,
+                duration: 18,
+                ease: 'none',
+                repeat: -1,
+                modifiers: {
+                    x: gsap.utils.unitize(x => (parseFloat(x) % -totalWidth))
+                }
+            });
         }, 300));
     });
     

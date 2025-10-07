@@ -690,6 +690,17 @@ body.custom-cursor-active *:hover {
     font-size: 0.95rem !important;
     line-height: 1.5 !important;
     margin-bottom: 1.5rem !important;
+    max-width: 36rem !important; /* prevent congested lines */
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+    hyphens: none !important; /* avoid "sup-port" breaks */
+  }
+
+  /* Avoid hyphenation/odd breaks for hero title */
+  #hero-headline {
+    word-break: keep-all !important;
+    overflow-wrap: normal !important;
+    hyphens: none !important;
   }
   
   /* Compact button spacing */
@@ -1082,6 +1093,17 @@ body.custom-cursor-active *:hover {
   #pricing-modal .membership-card .pp-feat { grid-template-columns: 1fr !important; margin-right: 0 !important; }
   #pricing-modal .membership-card { gap: 0.75rem !important; }
   #pricing-modal .membership-card .pp-cta { width: 100% !important; }
+
+  /* Mobile pricing: hide desktop membership and horizontal row to avoid 5th duplicate card */
+  #pricing-modal .membership-card-wrapper { display: none !important; }
+  #pricing-modal #packages-row { display: none !important; }
+
+  /* Add subtle border glow to mobile pricing cards */
+  #pricing-modal .package-card,
+  #mobile-pricing-stack .package-card {
+    border-color: rgba(59,130,246,0.45) !important;
+    box-shadow: 0 8px 24px rgba(59,130,246,0.15), 0 0 0 1px rgba(59,130,246,0.35) !important;
+  }
   
   /* Fix blank spaces */
   .py-32 {

@@ -433,8 +433,11 @@ function initMobileMenu() {
         let openedAt = 0;
         
         // Toggle menu on button click
+        let toggling = false;
         mobileMenuBtn.addEventListener('click', function(e) {
             e.stopPropagation();
+            if (toggling) return; // prevent double toggle spam
+            toggling = true;
             const isOpening = mobileMenu.classList.contains('hidden');
             // Use overlay behavior on mobile: fixed, inset-0
             if (isOpening) {
@@ -454,6 +457,7 @@ function initMobileMenu() {
             } else {
                 svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
             }
+            setTimeout(() => { toggling = false; }, 150);
         });
         
         // Close menu when clicking a nav item
@@ -490,6 +494,13 @@ function initMobileMenu() {
                 svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
             }
         });
+
+        // Prevent background scroll during touchmove when menu is open (extra guard on some browsers)
+        document.addEventListener('touchmove', function(e) {
+            if (!mobileMenu.classList.contains('hidden')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
     }
 }
 
