@@ -40,6 +40,7 @@ html {
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   overflow-x: hidden;
+  scroll-padding-top: 80px; /* Account for fixed navbar */
 }
 
 body {
@@ -49,6 +50,7 @@ body {
   background-color: white;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior-y: none; /* Prevent bounce on mobile */
 }
 
 /* Custom cursor applied via JavaScript when supported */
@@ -652,18 +654,19 @@ body.custom-cursor-active *:hover {
     padding-bottom: 3rem !important;
   }
   
-  /* Hero section mobile fix - ensure content is visible and compact */
+  /* Hero section mobile fix - ensure content is visible with better spacing */
   #home {
     min-height: 100vh;
     min-height: -webkit-fill-available;
     display: flex;
     align-items: center;
-    padding-top: 6rem !important;
-    padding-bottom: 2rem !important;
+    padding-top: 5rem !important;
+    padding-bottom: 3rem !important;
   }
   
   #home .grid {
     width: 100%;
+    gap: 2rem !important;
   }
   
   /* Reduce space above badge */
@@ -701,6 +704,13 @@ body.custom-cursor-active *:hover {
     word-break: keep-all !important;
     overflow-wrap: normal !important;
     hyphens: none !important;
+    margin-bottom: 1.5rem !important;
+  }
+  
+  /* Add breathing room to buttons */
+  #home .btn-primary,
+  #home .btn-ghost {
+    margin-top: 0.5rem !important;
   }
   
   /* Compact button spacing */
@@ -709,14 +719,49 @@ body.custom-cursor-active *:hover {
     margin-bottom: 0 !important;
   }
   
-  /* AI Energy Core - SHOW on mobile per request (cubic energy core) */
+  /* AI Energy Core - make smaller on mobile as requested */
   .ai-core-container {
     display: flex !important;
+    transform: scale(0.45) !important; /* Reduced from 0.55 */
+    will-change: auto !important; /* Remove will-change for better performance */
   }
-  .tesseract-cube { transform: scale(0.85); }
-  .ring-1 { width: 280px; height: 280px; }
-  .ring-2 { width: 220px; height: 220px; }
-  .ring-3 { width: 320px; height: 320px; }
+  .tesseract-cube { 
+    transform: scale(0.6) !important; /* Reduced from 0.7 */
+    will-change: auto !important;
+  }
+  .ring-1 { width: 180px; height: 180px; } /* Reduced from 200 */
+  .ring-2 { width: 140px; height: 140px; } /* Reduced from 160 */
+  .ring-3 { width: 200px; height: 200px; } /* Reduced from 220 */
+  
+  /* Aggressive performance optimization - hide ALL heavy animations */
+  .energy-particles,
+  .mini-energy-core,
+  .cube-face::before,
+  .cube-face::after,
+  .mini-core-ring {
+    display: none !important;
+  }
+  
+  /* Simplify cube animations - reduce GPU load */
+  .tesseract-cube,
+  .inner-cube,
+  .outer-cube {
+    animation-duration: 80s !important; /* Slowed from 60s */
+    will-change: auto !important;
+  }
+  
+  .energy-ring-1 { 
+    animation-duration: 70s !important; /* Slowed from 50s */
+    will-change: auto !important;
+  }
+  .energy-ring-2 { 
+    animation-duration: 75s !important; /* Slowed from 55s */
+    will-change: auto !important;
+  }
+  .energy-ring-3 { 
+    animation-duration: 65s !important; /* Slowed from 45s */
+    will-change: auto !important;
+  }
 
   /* Mobile hero animation container sizing */
   .hero-animation-container {
@@ -1078,16 +1123,45 @@ body.custom-cursor-active *:hover {
     transition-duration: 0.3s !important;
   }
 
-  /* Restore and stabilize hero energy core animations on mobile */
-  .tesseract-cube { animation-duration: 30s !important; }
-  .inner-cube { animation-duration: 24s !important; }
-  .outer-cube { animation-duration: 28s !important; }
-  .ring-1 { animation-duration: 30s !important; }
-  .ring-2 { animation-duration: 22s !important; }
-  .ring-3 { animation-duration: 35s !important; }
+  /* Restore and stabilize hero energy core animations on mobile - slower for smoothness */
+  .tesseract-cube { animation-duration: 40s !important; }
+  .inner-cube { animation-duration: 35s !important; }
+  .outer-cube { animation-duration: 38s !important; }
+  .ring-1 { animation-duration: 45s !important; }
+  .ring-2 { animation-duration: 35s !important; }
+  .ring-3 { animation-duration: 50s !important; }
+  
+  /* Disable complex transforms on mobile */
+  .cube-face::before { display: none !important; }
+  .mini-core-ring { display: none !important; }
 
-  /* Mobile menu overlay must always be on top */
-  #mobile-menu { z-index: 99999 !important; pointer-events: auto !important; }
+  /* Mobile menu overlay - completely rebuilt for reliability */
+  #mobile-menu {
+    display: none !important;
+  }
+  
+  #mobile-menu.active {
+    display: flex !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(0, 0, 0, 0.97) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    z-index: 999999 !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 2rem !important;
+    animation: fadeIn 0.2s ease-out !important;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 
   /* Pricing membership features: single column on mobile for readability */
   #pricing-modal .membership-card .pp-feat { grid-template-columns: 1fr !important; margin-right: 0 !important; }

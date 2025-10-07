@@ -413,95 +413,74 @@ function initPackageToggle() {
 
 // Mobile Menu Toggle
 function initMobileMenu() {
+    console.log('🔧 initMobileMenu called');
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
     const mobileNavItems = document.querySelectorAll('.mobile-nav-item');
     
-    if (mobileMenuBtn && mobileMenu) {
-        // Prevent body scroll when menu is open
-        const toggleBodyScroll = (lock) => {
-            if (lock) {
-                document.body.style.overflow = 'hidden';
-                document.body.style.position = 'fixed';
-                document.body.style.width = '100%';
-            } else {
-                document.body.style.overflow = '';
-                document.body.style.position = '';
-                document.body.style.width = '';
-            }
-        };
-        let openedAt = 0;
-        
-        // Toggle menu on button click
-        let toggling = false;
-        mobileMenuBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (toggling) return; // prevent double toggle spam
-            toggling = true;
-            const isOpening = mobileMenu.classList.contains('hidden');
-            // Use overlay behavior on mobile: fixed, inset-0
-            if (isOpening) {
-                mobileMenu.classList.remove('hidden');
-                mobileMenu.classList.add('active');
-                openedAt = Date.now();
-            } else {
-                mobileMenu.classList.add('hidden');
-                mobileMenu.classList.remove('active');
-            }
-            toggleBodyScroll(isOpening);
-            
-            // Animate hamburger icon to X
-            const svg = mobileMenuBtn.querySelector('svg');
-            if (!mobileMenu.classList.contains('hidden')) {
-                svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
-            } else {
-                svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
-            }
-            setTimeout(() => { toggling = false; }, 150);
-        });
-        
-        // Close menu when clicking a nav item
-        mobileNavItems.forEach(item => {
-            item.addEventListener('click', function() {
-                mobileMenu.classList.add('hidden');
-                mobileMenu.classList.remove('active');
-                toggleBodyScroll(false);
-                const svg = mobileMenuBtn.querySelector('svg');
-                svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
-            });
-        });
-        
-        // Close menu when clicking outside
-        document.addEventListener('click', function(e) {
-            // Give a short grace period after opening so the same tap doesn't immediately close it
-            if (Date.now() - openedAt < 200) return;
-            if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
-                mobileMenu.classList.add('hidden');
-                mobileMenu.classList.remove('active');
-                toggleBodyScroll(false);
-                const svg = mobileMenuBtn.querySelector('svg');
-                svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
-            }
-        });
-        
-        // Close menu on escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && !mobileMenu.classList.contains('hidden')) {
-                mobileMenu.classList.add('hidden');
-                mobileMenu.classList.remove('active');
-                toggleBodyScroll(false);
-                const svg = mobileMenuBtn.querySelector('svg');
-                svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
-            }
-        });
-
-        // Prevent background scroll during touchmove when menu is open (extra guard on some browsers)
-        document.addEventListener('touchmove', function(e) {
-            if (!mobileMenu.classList.contains('hidden')) {
-                e.preventDefault();
-            }
-        }, { passive: false });
+    console.log('🔍 Elements found:', {
+        btn: !!mobileMenuBtn,
+        menu: !!mobileMenu,
+        items: mobileNavItems.length
+    });
+    
+    if (!mobileMenuBtn || !mobileMenu) {
+        console.error('❌ Mobile menu elements not found!');
+        return;
     }
+    
+    // Simple toggle function
+    function toggleMenu() {
+        const isHidden = mobileMenu.classList.contains('hidden');
+        console.log('🔄 Toggle menu. Currently hidden:', isHidden);
+        
+        if (isHidden) {
+            // Open menu
+            mobileMenu.classList.remove('hidden');
+            mobileMenu.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            console.log('✅ Menu opened');
+        } else {
+            // Close menu
+            mobileMenu.classList.add('hidden');
+            mobileMenu.classList.remove('active');
+            document.body.style.overflow = '';
+            console.log('✅ Menu closed');
+        }
+        
+        // Update icon
+        const svg = mobileMenuBtn.querySelector('svg');
+        if (svg) {
+            svg.innerHTML = isHidden 
+                ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>'
+                : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
+        }
+    }
+    
+    // Button click handler
+    mobileMenuBtn.addEventListener('click', function(e) {
+        console.log('🖱️ Menu button clicked');
+        e.preventDefault();
+        e.stopPropagation();
+        toggleMenu();
+    });
+    
+    // Close on nav item click
+    mobileNavItems.forEach((item, index) => {
+        item.addEventListener('click', function() {
+            console.log(`📍 Nav item ${index} clicked`);
+            mobileMenu.classList.add('hidden');
+            mobileMenu.classList.remove('active');
+            document.body.style.overflow = '';
+            
+            const svg = mobileMenuBtn.querySelector('svg');
+            if (svg) {
+                svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
+            }
+        });
+    });
+    
+    console.log('✅ Mobile menu initialized successfully');
 }
 
 // Smooth Scrolling for Anchor Links
@@ -949,6 +928,54 @@ setTimeout(() => {
 
 // Scroll-triggered stacking effect (Optimized)
 function initScrollStacking() {
+    // Disable ALL ScrollTrigger animations on mobile for performance
+    if (window.innerWidth < 768) {
+        console.log('📱 Mobile detected - ScrollTrigger animations DISABLED for performance');
+        
+        // Simply show all elements immediately on mobile
+        const sections = document.querySelectorAll('.stackable-section');
+        sections.forEach((section) => {
+            const keyElements = section.querySelectorAll('h1, h2, .framer-card:not(.testimonial-card)');
+            keyElements.forEach(el => {
+                el.style.opacity = '1';
+                el.style.transform = 'none';
+            });
+        });
+        
+        // Run counter animations immediately on mobile
+        const counters = document.querySelectorAll('.counter[data-target]');
+        if (counters.length) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) return;
+                    const el = entry.target;
+                    const target = parseInt(el.getAttribute('data-target'), 10) || 0;
+                    
+                    let startTime = null;
+                    const duration = 1200;
+                    
+                    const animate = (timestamp) => {
+                        if (!startTime) startTime = timestamp;
+                        const progress = Math.min((timestamp - startTime) / duration, 1);
+                        el.textContent = Math.floor(progress * target).toString();
+                        
+                        if (progress < 1) {
+                            requestAnimationFrame(animate);
+                        }
+                    };
+                    
+                    requestAnimationFrame(animate);
+                    observer.unobserve(el);
+                });
+            }, { threshold: 0.3 });
+            
+            counters.forEach(counter => observer.observe(counter));
+        }
+        
+        return; // Exit early - no GSAP/ScrollTrigger on mobile
+    }
+    
+    // Desktop: Full ScrollTrigger animations
     if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
         console.log('⚠️ GSAP or ScrollTrigger not loaded');
         return;
