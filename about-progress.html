@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEVORSE — Scroll Story</title>
+  <meta name="description" content="SEVORSE story with scroll-driven progress bar and GSAP micro-interactions." />
+
+  <!-- Tailwind CDN for utility classes used in the demo markup -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter','sans-serif'] } } } };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- No GSAP on this page to avoid scroll freezes -->
+
+  <style>
+    /* Base */
+    :root {
+      --progress-stroke: #000;
+      --progress-fill: #d080ff;
+      --brand-1: #6d28d9; /* purple-700 */
+      --brand-2: #2563eb; /* blue-600 */
+      --brand-3: #22d3ee; /* cyan-400 */
+      --navy-900: #0b1220;
+      --navy-800: #0f172a;
+      --gold-500: #fbbf24;
+      --ink-900: #0b1220;
+      --ink-800: #0f172a;
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --brand-gradient: linear-gradient(135deg, var(--brand-1) 0%, var(--brand-2) 60%, var(--brand-3) 100%);
+    }
+    html { scroll-timeline: --page-scroll block; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, 'Open Sans', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: var(--surface);
+      color: var(--ink-900);
+    }
+
+    /* Demo heading style */
+    .heading {
+      font-size: clamp(8rem, 11.077vw + 0.731rem, 12.5rem);
+      line-height: 0.95;
+      background: var(--brand-gradient);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    /* Progress bar (scroll-driven text fill) */
+    .progress-bar { position: fixed; top: 50%; left: 5.5rem; width: 27.5rem; transform: rotate(90deg) translate(-50%, -50%); transform-origin: top left; z-index: 40; font-family: "Noto Sans", sans-serif; font-size: 5rem; pointer-events: none; }
+  .progress-bar__text { position: absolute; top: 0; left: 0; margin: 0; white-space: nowrap; font-weight: 800; line-height: 1.5; color: transparent; -webkit-text-stroke: 2px var(--progress-stroke); }
+    .progress-bar__text::before, .progress-bar__text::after { position: absolute; top: 0; left: 0; white-space: nowrap; font-weight: 800; line-height: 1.5; content: attr(data-text); }
+    .progress-bar__text::before { color: #fff; }
+    .progress-bar__text::after { 
+      background: var(--progress-fill);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      animation: clip-fill auto linear; animation-timeline: --page-scroll;
+    }
+    @keyframes clip-fill { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+
+    @media (max-width: 768px) {
+      .progress-bar { display: none; }
+    }
+
+    /* Author badge (optional) */
+    .c-author { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); text-align: center; color: #404040; z-index: 40; }
+    .c-author__link { color: #404040; text-decoration: none; position: relative; }
+    .c-author__link::before, .c-author__link::after { content: ""; position: absolute; left: 0; bottom: 0; height: 8px; z-index: -1; }
+    .c-author__link::before { width: 100%; background: #dbdbdb; }
+    .c-author__link::after { width: 0; background: #c584f8; transition: width .3s ease-in-out; }
+    .c-author__link:hover::after { width: 100%; }
+
+  /* Sticky horizontal slider */
+  #story-cards { position: relative; height: 400vh; }
+  .sc-sticky { position: sticky; top: 0; height: 100vh; }
+  .sc-stage { position: relative; width: 100%; height: 100%; overflow: hidden; /* allow custom gesture handling */ touch-action: pan-y; }
+  .sc-track { position: absolute; inset: 0; display: flex; width: 400%; height: 100%; will-change: transform; }
+  .sc-panel { flex: 0 0 100vw; height: 100%; display: grid; place-items: center; padding: clamp(12px, 2vw, 24px); }
+    .sc-stage::before { /* subtle decorative glow */
+      content: ""; position: absolute; width: 60vmax; height: 60vmax; border-radius: 50%;
+      background: radial-gradient(closest-side, rgba(109,40,217,0.12), rgba(37,99,235,0.08), transparent 70%);
+      filter: blur(40px); transform: translate(-20%, -20%); top: -20%; left: -10%; pointer-events: none; z-index: 1;
+    }
+  .sc-card { position: relative; width: min(1200px, 92vw); height: auto; border-radius: 20px; 
+    background: radial-gradient(1200px 600px at 10% 10%, rgba(59,130,246,0.08), transparent 60%),
+                linear-gradient(180deg, var(--navy-900), var(--navy-800));
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 20px 70px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.03);
+    will-change: transform, opacity; display: block; overflow: visible; transform-origin: center center; z-index: 2; color: #eef2ff;
+  }
+  .sc-card::after { content: ""; position: absolute; inset: -24px; pointer-events: none; filter: blur(40px); opacity: .25;
+    background: radial-gradient(closest-side, rgba(251,191,36,0.18), rgba(59,130,246,0.12), transparent 70%);
+  }
+  .sc-card-inner { padding: clamp(24px, 6vw, 48px); width: 100%; max-width: 1200px; margin: 0 auto; }
+  .sc-card h1, .sc-card h3 { font-size: clamp(28px, 3.2vw, 56px); font-weight: 800; margin-bottom: clamp(12px,1.2vw,16px); color: #f8fafc; }
+  .sc-card p { font-size: clamp(16px, 1.4vw, 20px); line-height: 1.7; color: #cbd5e1; opacity: .95; }
+  .sc-card img { width: min(1200px, 90vw); height: auto; display: block; object-fit: contain; margin-inline: auto; }
+  /* Prevent any unexpected text cropping */
+  .sc-card p, .sc-card li, .section-stick p { overflow-wrap: anywhere; word-break: normal; hyphens: auto; text-wrap: pretty; white-space: normal; }
+  .section-stick p { max-width: 65ch; width: min(92vw, 65ch); }
+    /* Card micro-motion (tilt + wobble on touch/hover) */
+    .sc-card { transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease, opacity .35s ease; }
+    .sc-card.is-pressed { transition: transform .12s ease; }
+    .sc-stage, .sc-stage * { cursor: grab; }
+    .dragging .sc-stage, .dragging .sc-stage * { cursor: grabbing; }
+    @keyframes sc-card-wobble { 0% { transform: perspective(1000px) rotateX(0) rotateY(0) scale(1); }
+      25% { transform: perspective(1000px) rotateZ(0.6deg) scale(0.995); }
+      50% { transform: perspective(1000px) rotateZ(-0.9deg) scale(0.997); }
+      75% { transform: perspective(1000px) rotateZ(0.4deg) scale(0.998); }
+      100% { transform: perspective(1000px) rotateX(0) rotateY(0) rotateZ(0) scale(1); } }
+    .sc-card.do-wobble { animation: sc-card-wobble 450ms ease-out; }
+
+    /* Hero section polish */
+    .section-hero {
+      position: relative;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(99,102,241,0.08), transparent 60%),
+                  radial-gradient(800px 500px at 90% 20%, rgba(34,211,238,0.08), transparent 60%),
+                  linear-gradient(180deg, var(--surface), var(--surface-2));
+    }
+    .reverse-scroll { will-change: transform; }
+
+    /* Sticky text reveal section polish */
+    .section-stick { position: relative; background: linear-gradient(180deg, #0b1220 0%, #0f172a 100%); }
+    .section-stick::after { content: ""; position: absolute; inset: 0; background:
+      radial-gradient(600px 300px at 20% 80%, rgba(109,40,217,0.25), transparent 60%),
+      radial-gradient(700px 350px at 80% 20%, rgba(34,211,238,0.18), transparent 60%);
+      opacity: .5; pointer-events: none; }
+    .section-stick, .section-stick * { overflow: visible; }
+  .opacity-reveal { opacity: 0; transform: translateY(24px); filter: blur(6px); will-change: opacity, transform, filter; padding-inline: clamp(12px, 3vw, 24px); }
+
+  /* Responsive two-column list inside card content */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px,2vw,24px); }
+  @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+      padding: 12px 18px; border-radius: 12px; font-weight: 700; line-height: 1;
+      position: relative; isolation: isolate; overflow: hidden;
+      transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease, color .2s ease, filter .2s ease;
+    }
+    .btn:focus-visible { outline: 3px solid rgba(37,99,235,.5); outline-offset: 2px; }
+    .btn:active { transform: translateY(0); filter: brightness(.98); }
+
+    .btn-primary {
+      background: var(--brand-gradient); color: #fff; border: none;
+      box-shadow: 0 10px 30px rgba(37,99,235,0.25);
+    }
+    .btn-primary::before {
+      content: ""; position: absolute; inset: 0; left: -150%;
+      background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.25) 50%, transparent 100%);
+      transition: left .45s ease;
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 14px 36px rgba(37,99,235,0.33); }
+    .btn-primary:hover::before { left: 100%; }
+
+    .btn-outline { border: 2px solid var(--ink-900); color: var(--ink-900); background: transparent; }
+    .btn-outline:hover { background: #0b1220; color: #fff; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body class="bg-white text-black">
+  <!-- Navigation Header -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-200">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="index.html" class="flex items-center gap-2 text-gray-900 hover:text-blue-600 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        <span class="font-semibold">Back to Home</span>
+      </a>
+      <div class="flex gap-4">
+        <a href="gallery.html" class="text-gray-600 hover:text-blue-600 transition-colors">Gallery</a>
+        <a href="modern-pricing-cards.html" class="text-gray-600 hover:text-blue-600 transition-colors">Pricing</a>
+      </div>
+    </div>
+  </header>
+  
+  <main class="font-[Open_Sans] pt-16"
+  <!-- Section 1: Reverse-scroll content + image -->
+  <section class="section-hero flex p-12 md:p-24 min-h-screen">
+      <div class="flex flex-col xl:flex-row justify-between grow gap-12 md:gap-24 w-full">
+        <div class="reverse-scroll">
+          <h1 class="heading font-semibold leading-[0.8]">SEVORSE<br/>STORY</h1>
+          <p class="pt-8 px-2 max-w-xl">We build agentic copilots and business systems that feel effortless — precision engineering, clear design, and real outcomes.</p>
+          <p class="pt-2 px-2 max-w-xl">From MSMEs to enterprise, our platforms scale with you — secure, observable, and fast.</p>
+        </div>
+        <div class="grow flex xl:justify-end items-end">
+          <img class="reverse-scroll w-full max-w-[760px]" src="images/sevorse-title-with-slogan.png" alt="SEVORSE — You know the business, we know the tech" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Sticky text reveal -->
+    <section class="section-stick min-h-screen bg-black flex justify-center items-center text-white">
+      <p class="opacity-reveal text-3xl md:text-5xl lg:text-7xl text-center font-medium">Software should feel invisible. It should get out of your way and move work forward.</p>
+    </section>
+
+    <!-- Section 3: Three-card pinned story (performant) -->
+    <section id="story-cards" class="relative bg-white mt-[-1px]">
+      <div class="sc-sticky">
+        <div class="sc-stage">
+          <div class="sc-track" id="scTrack">
+            <section class="sc-panel" aria-label="SEVORSE Membership">
+              <div class="sc-card">
+                <div class="sc-card-inner">
+                  <h1>Sevorse Membership</h1>
+                  <p>Ongoing partnership for ambitious teams. Priority access, strategy sessions, and a predictable sprint cadence to keep your roadmap moving.</p>
+                  <div class="two-col" style="gap: clamp(12px,2vw,24px); margin-top: clamp(12px,1.6vw,18px);">
+                    <ul style="list-style:none; padding:0; margin:0; font-size:clamp(14px,1.2vw,18px);">
+                      <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Priority slack channel + on-call support</li>
+                      <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Monthly roadmap + KPI review</li>
+                      <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ 2 focused build sprints / month</li>
+                    </ul>
+                    <ul style="list-style:none; padding:0; margin:0; font-size:clamp(14px,1.2vw,18px);">
+                      <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Design, dev, and data support</li>
+                      <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Quarterly platform audit</li>
+                      <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Discount on Elite projects</li>
+                    </ul>
+                  </div>
+                  <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top: clamp(16px,2vw,24px);">
+                    <a href="index.html#contact" class="btn btn-primary">Join Membership</a>
+                    <a href="modern-pricing-cards.html" class="btn btn-outline" style="border-color: var(--gold-500); color:#fef9c3;">Explore plans</a>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section class="sc-panel" aria-label="SEVORSE image">
+              <div class="sc-card">
+                <div class="sc-card-inner flex items-center justify-center">
+                  <img src="images/sevorse-title-with-slogan.png" alt="SEVORSE — You know the business, we know the tech" loading="eager" />
+                </div>
+              </div>
+            </section>
+            <section class="sc-panel" aria-label="SEVORSE story">
+              <div class="sc-card">
+                <div class="sc-card-inner">
+                  <h1>We build systems that feel effortless.</h1>
+                  <p>SEVORSE designs obvious-to-use apps and agentic copilots that help your teams move faster with less friction. We instrument everything for learning, and we ship value weekly.</p>
+                  <div style="display:grid; grid-template-columns: 1fr; gap: clamp(12px,1.6vw,18px); margin-top: clamp(16px,2vw,24px);">
+                    <div class="two-col" style="gap: clamp(12px,2vw,24px);">
+                      <ul style="list-style:none; padding:0; margin:0; font-size:clamp(14px,1.2vw,18px);">
+                        <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Agentic copilots for ops, sales, support</li>
+                        <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Modern web + mobile apps tuned for speed</li>
+                        <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Automation pipelines that remove busywork</li>
+                      </ul>
+                      <ul style="list-style:none; padding:0; margin:0; font-size:clamp(14px,1.2vw,18px);">
+                        <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Observability from day one</li>
+                        <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Mobile-first clarity, resilient at scale</li>
+                        <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Weekly momentum → long-term mastery</li>
+                      </ul>
+                    </div>
+                    <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top: clamp(12px,1.2vw,18px);">
+                      <a href="index.html#contact" class="btn btn-primary">Book a consultation</a>
+                      <a href="gallery.html" class="btn btn-outline">View gallery</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section class="sc-panel" aria-label="How we work">
+              <div class="sc-card">
+                <div class="sc-card-inner">
+                  <h1>Clear process. Predictable outcomes.</h1>
+                  <p>Weekly shipping, measurable impact. We partner closely with your team to reduce friction and move the needle—fast.</p>
+                  <div class="two-col" style="gap: clamp(12px,2vw,24px); margin-top: clamp(12px,1.6vw,18px);">
+                    <ul style="list-style:none; padding:0; margin:0; font-size:clamp(14px,1.2vw,18px);">
+                      <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Discovery → roadmap in days, not weeks</li>
+                      <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Telemetry-first builds for learning</li>
+                      <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Tight feedback loops with demos</li>
+                    </ul>
+                    <ul style="list-style:none; padding:0; margin:0; font-size:clamp(14px,1.2vw,18px);">
+                      <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Secure, observable, and scalable</li>
+                      <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Seamless handover and docs</li>
+                      <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Ongoing support that actually helps</li>
+                    </ul>
+                  </div>
+                  <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top: clamp(16px,2vw,24px);">
+                    <a href="index.html#contact" class="btn btn-primary" style="background: linear-gradient(135deg,#0ea5e9,#22d3ee); color:#04101f;">Discuss your goals</a>
+                    <a href="modern-pricing-cards.html" class="btn btn-outline" style="border-color: var(--gold-500); color:#fef9c3;">See pricing</a>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Progress Bar (scroll timeline) -->
+  <div class="progress-bar">
+    <div class="progress-bar__text" data-text="SEVORSE">SEVORSE</div>
+  </div>
+
+  <div class="c-author hidden md:block">
+    Built for <a target="_blank" class="c-author__link" href="#">SEVORSE</a>
+  </div>
+
+  <script>
+    // Lightweight scroll handler for the three-card sequence (no libraries)
+    (function(){
+      const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const section = document.getElementById('story-cards');
+      if (!section) return;
+  const track = document.getElementById('scTrack');
+      const stage = section.querySelector('.sc-stage');
+      const panels = Array.from(track ? track.querySelectorAll('.sc-panel') : []);
+      const revEls = document.querySelectorAll('.reverse-scroll');
+      const reveal = document.querySelector('.opacity-reveal');
+      const revealSection = document.querySelector('.section-stick');
+  let ticking = false;
+  let vh = window.innerHeight || 1;
+  let vw = window.innerWidth || 1;
+      let total = section.offsetHeight - vh;
+  const count = Math.max(1, panels.length);
+  // Dynamically size the vertical scroll length and track width to match number of panels
+  section.style.height = `${count * 100}vh`;
+  if (track) track.style.width = `${count * 100}%`;
+      // Gesture state
+      let isDragging = false;
+      let dragStartX = 0;
+      let dragStartScroll = 0;
+      const DRAG_SCROLL_FACTOR = 1.15; // px horizontal -> px vertical scroll
+
+      function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+      function norm(v, a, b){ return clamp((v - a) / (b - a), 0, 1); }
+  function recalc(){ vh = window.innerHeight || 1; vw = window.innerWidth || 1; total = section.offsetHeight - vh; }
+
+      function update(){
+        const rect = section.getBoundingClientRect();
+        const scrolled = clamp(-rect.top, 0, total);
+  const p = total > 0 ? scrolled / total : 0; // 0..1
+  // Move horizontal track across N panels using px (0 -> -(N-1)*vw)
+  const x = -((count - 1) * vw) * p;
+  if (track) track.style.transform = `translate3d(${x}px, 0, 0)`;
+
+        // Parallax for reverse-scroll hero elements (skip while story section is in view to reduce work)
+        if (!reduceMotion && revEls.length && (rect.top > vh || rect.bottom < 0)) {
+          const mid = vh * 0.5;
+          revEls.forEach(el => {
+            const r = el.getBoundingClientRect();
+            if (r.bottom < 0 || r.top > vh) return;
+            const emid = r.top + r.height * 0.5;
+            const dy = (mid - emid) * 0.12; // subtle counter scroll
+            el.style.transform = `translateY(${dy}px)`;
+          });
+        }
+
+        // Sticky text reveal tween
+        if (reveal && revealSection) {
+          const rs = revealSection.getBoundingClientRect();
+          const start = vh * 0.15, end = vh * 0.85;
+          const progress = clamp((end - rs.top) / (end - start), 0, 1);
+          reveal.style.opacity = String(progress);
+          const ty = 24 * (1 - progress);
+          const blur = 6 * (1 - progress);
+          reveal.style.transform = `translateY(${ty}px)`;
+          reveal.style.filter = `blur(${blur}px)`;
+        }
+
+        ticking = false;
+      }
+
+      function onScroll(){ if (!ticking) { ticking = true; requestAnimationFrame(update); } }
+      function onResize(){ recalc(); update(); }
+
+      // Convert horizontal touchpad scroll to vertical scroll while in view
+      function onWheel(e){
+        const r = section.getBoundingClientRect();
+        const inView = r.top < vh && r.bottom > 0;
+        if (!inView) return;
+        // If horizontal intent is stronger, map it to vertical page scroll
+        const absX = Math.abs(e.deltaX), absY = Math.abs(e.deltaY);
+        if (absX > absY || e.shiftKey) {
+          e.preventDefault();
+          const amt = absX > absY ? e.deltaX : e.deltaY;
+          window.scrollBy({ top: amt, left: 0, behavior: 'auto' });
+        }
+      }
+
+      // Pointer drag to scrub horizontally (maps to vertical scroll)
+      function onPointerDown(e){
+        if (!stage) return;
+        isDragging = true;
+        document.documentElement.classList.add('dragging');
+        stage.setPointerCapture && stage.setPointerCapture(e.pointerId);
+        dragStartX = e.clientX;
+        dragStartScroll = window.scrollY || window.pageYOffset || 0;
+      }
+      function onPointerMove(e){
+        if (!isDragging) return;
+        const dx = e.clientX - dragStartX;
+        const target = dragStartScroll - dx * DRAG_SCROLL_FACTOR;
+        window.scrollTo({ top: clamp(target, 0, document.body.scrollHeight), behavior: 'auto' });
+      }
+      function onPointerUp(e){
+        if (!isDragging) return;
+        isDragging = false;
+        document.documentElement.classList.remove('dragging');
+        stage.releasePointerCapture && stage.releasePointerCapture(e.pointerId);
+      }
+
+      // Card tilt + wobble on touch/hover
+      function attachCardTilt(card){
+        if (!card) return;
+        const MAX_TILT = 6; // degrees
+        let pressed = false;
+        function setTilt(x, y){
+          const rect = card.getBoundingClientRect();
+          const cx = rect.left + rect.width/2;
+          const cy = rect.top + rect.height/2;
+          const dx = clamp((x - cx) / (rect.width/2), -1, 1);
+          const dy = clamp((y - cy) / (rect.height/2), -1, 1);
+          const rx = (-dy) * MAX_TILT;
+          const ry = (dx) * MAX_TILT;
+          card.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+        }
+        function resetTilt(){
+          card.style.transform = '';
+        }
+        card.addEventListener('pointerdown', (e)=>{
+          pressed = true; card.classList.add('is-pressed');
+          setTilt(e.clientX, e.clientY);
+        });
+        card.addEventListener('pointermove', (e)=>{ if (pressed) setTilt(e.clientX, e.clientY); });
+        const end = ()=>{ if (!pressed) return; pressed = false; card.classList.remove('is-pressed'); card.classList.add('do-wobble'); resetTilt(); setTimeout(()=>card.classList.remove('do-wobble'), 500); };
+        card.addEventListener('pointerup', end);
+        card.addEventListener('pointercancel', end);
+        card.addEventListener('mouseleave', ()=>{ if (!pressed) return; pressed = false; card.classList.remove('is-pressed'); card.classList.add('do-wobble'); resetTilt(); setTimeout(()=>card.classList.remove('do-wobble'), 500); });
+      }
+
+      // Bind events
+      window.addEventListener('wheel', onWheel, { passive: false });
+      if (stage) {
+        stage.addEventListener('pointerdown', onPointerDown);
+        window.addEventListener('pointermove', onPointerMove);
+        window.addEventListener('pointerup', onPointerUp);
+        window.addEventListener('pointercancel', onPointerUp);
+      }
+      panels.forEach(p => attachCardTilt(p.querySelector('.sc-card')));
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onResize);
+      // Initial paint
+      recalc();
+      update();
+    })();
+  </script>
+</body>
+</html>

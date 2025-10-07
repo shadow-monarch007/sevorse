@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEVORSE — Gallery</title>
+  <meta name="description" content="Responsive 3D tilt/parallax gallery with GSAP." />
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { container: { center: true, padding: '1rem' } } } };
+  </script>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    /* Isolation so Tailwind utilities don't override 3D internals */
+    :root { --gallery-perspective: 1200px; --max-tilt: 12; --hover-tilt: 16; }
+    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: radial-gradient(1200px 600px at 50% -10%, #0f172a 0%, #0a0d14 60%); color:#e5e7eb; }
+    #g-stage { perspective: var(--gallery-perspective); perspective-origin: 50% 35%; transform-style: preserve-3d; }
+    .g-item { contain: layout paint; }
+    .g-float { will-change: transform; }
+    .g-card { transform-style: preserve-3d; will-change: transform; }
+    .g-media { position: relative; transform: translateZ(0.01px); overflow: hidden; border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,.45); }
+    .g-img { width:100%; height:100%; object-fit: cover; transform: translateZ(0.01px); will-change: transform; display:block; }
+    .g-shine { position:absolute; inset:0; pointer-events:none; mix-blend-mode:screen; opacity:0; background: radial-gradient(400px 300px at 50% 50%, rgba(255,255,255,0.22), rgba(255,255,255,0.06) 40%, transparent 60%); transition: opacity .25s ease; }
+    .g-media::after { content:""; position:absolute; inset:auto 10% 6% 10%; height:20%; background: radial-gradient(60% 100% at 50% 0%, rgba(0,0,0,.45), transparent 70%); filter: blur(8px); transform: translateZ(-1px); }
+    @media (prefers-reduced-motion: reduce) { *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; } }
+  </style>
+</head>
+<body class="min-h-screen">
+  <header class="sticky top-0 z-40 backdrop-blur-md bg-black/30">
+    <div class="container flex items-center justify-between py-3">
+      <div class="flex items-center gap-3">
+        <img src="images/sevorse-logo-white.png" alt="SEVORSE" class="h-8 w-auto" />
+        <span class="text-sm text-slate-300">Portfolio Gallery</span>
+      </div>
+      <a href="index.html" class="text-sm px-3 py-1 rounded-md border border-white/20 text-slate-100 hover:bg-white/10">Home</a>
+    </div>
+  </header>
+
+  <main id="g-stage" class="container py-10 md:py-14">
+    <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-8 md:mb-12">Featured Work</h1>
+    <div id="g-filters" class="flex flex-wrap gap-2 mb-8">
+      <button data-filter="all" class="px-3 py-1 rounded-md border border-white/20 text-slate-100 hover:bg-white/10" aria-pressed="true">All</button>
+      <button data-filter="web" class="px-3 py-1 rounded-md border border-white/10 text-slate-300 hover:text-white hover:border-white/30">Web</button>
+      <button data-filter="mobile" class="px-3 py-1 rounded-md border border-white/10 text-slate-300 hover:text-white hover:border-white/30">Mobile</button>
+      <button data-filter="ai" class="px-3 py-1 rounded-md border border-white/10 text-slate-300 hover:text-white hover:border-white/30">AI</button>
+      <button data-filter="brand" class="px-3 py-1 rounded-md border border-white/10 text-slate-300 hover:text-white hover:border-white/30">Branding</button>
+    </div>
+
+    <div id="g-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 select-none">
+      <!-- 9 cards, consistent aspect ratio for a tight grid -->
+  <div class="g-item group" data-cat="web">
+        <div class="g-float">
+          <div class="g-card">
+            <div class="g-media aspect-[4/5] bg-slate-800">
+              <img class="g-img" src="https://images.unsplash.com/photo-1463100099107-aa0980c362e6?w=1200&auto=format&fit=crop&q=70" alt="Project 1"/>
+              <div class="g-shine"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+  <div class="g-item group" data-cat="mobile">
+        <div class="g-float"><div class="g-card"><div class="g-media aspect-[4/5] bg-slate-800"><img class="g-img" src="https://images.unsplash.com/photo-1556304044-0699e31c6a34?w=1200&auto=format&fit=crop&q=70" alt="Project 2"/><div class="g-shine"></div></div></div></div>
+      </div>
+  <div class="g-item group" data-cat="ai">
+        <div class="g-float"><div class="g-card"><div class="g-media aspect-[4/5] bg-slate-800"><img class="g-img" src="https://images.unsplash.com/photo-1590330297626-d7aff25a0431?w=1200&auto=format&fit=crop&q=70" alt="Project 3"/><div class="g-shine"></div></div></div></div>
+      </div>
+  <div class="g-item group" data-cat="brand">
+        <div class="g-float"><div class="g-card"><div class="g-media aspect-[4/5] bg-slate-800"><img class="g-img" src="https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=1200&auto=format&fit=crop&q=70" alt="Project 4"/><div class="g-shine"></div></div></div></div>
+      </div>
+  <div class="g-item group" data-cat="web">
+        <div class="g-float"><div class="g-card"><div class="g-media aspect-[4/5] bg-slate-800"><img class="g-img" src="https://images.unsplash.com/photo-1488161628813-04466f872be2?w=1200&auto=format&fit=crop&q=70" alt="Project 5"/><div class="g-shine"></div></div></div></div>
+      </div>
+  <div class="g-item group" data-cat="mobile">
+        <div class="g-float"><div class="g-card"><div class="g-media aspect-[4/5] bg-slate-800"><img class="g-img" src="https://images.unsplash.com/photo-1565321590372-09331b9dd1eb?w=1200&auto=format&fit=crop&q=70" alt="Project 6"/><div class="g-shine"></div></div></div></div>
+      </div>
+  <div class="g-item group" data-cat="ai">
+        <div class="g-float"><div class="g-card"><div class="g-media aspect-[4/5] bg-slate-800"><img class="g-img" src="https://images.unsplash.com/photo-1517816743773-6e0fd518b4a6?w=1200&auto=format&fit=crop&q=70" alt="Project 7"/><div class="g-shine"></div></div></div></div>
+      </div>
+  <div class="g-item group" data-cat="brand">
+        <div class="g-float"><div class="g-card"><div class="g-media aspect-[4/5] bg-slate-800"><img class="g-img" src="https://images.unsplash.com/photo-1520975693416-35a5f90f45e5?w=1200&auto=format&fit=crop&q=70" alt="Project 8"/><div class="g-shine"></div></div></div></div>
+      </div>
+  <div class="g-item group" data-cat="web">
+        <div class="g-float"><div class="g-card"><div class="g-media aspect-[4/5] bg-slate-800"><img class="g-img" src="https://images.unsplash.com/photo-1531525645387-7f14be1bdbbd?w=1200&auto=format&fit=crop&q=70" alt="Project 9"/><div class="g-shine"></div></div></div></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Lightbox Modal -->
+  <div id="g-lightbox" class="fixed inset-0 z-[100] hidden" role="dialog" aria-modal="true" aria-labelledby="g-lightbox-title">
+    <div id="g-lightbox-backdrop" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+    <div class="relative z-10 h-full w-full flex items-center justify-center p-4">
+      <div class="relative w-full max-w-6xl">
+        <button id="g-lightbox-close" class="absolute -top-10 right-0 text-white/90 hover:text-white text-3xl" aria-label="Close">&times;</button>
+        <div class="rounded-2xl overflow-hidden bg-black/30">
+          <img id="g-lightbox-img" src="" alt="" class="w-full h-[70vh] object-contain" />
+        </div>
+        <div class="mt-3 flex items-center justify-between text-slate-200">
+          <p id="g-lightbox-title" class="text-base md:text-lg"></p>
+          <div class="flex gap-2">
+            <button id="g-prev" class="px-3 py-1 rounded-md border border-white/20 hover:bg-white/10">Prev</button>
+            <button id="g-next" class="px-3 py-1 rounded-md border border-white/20 hover:bg-white/10">Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script>
+    // 3D tilt + parallax + subtle floating
+    window.addEventListener('load', () => {
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const stage = document.getElementById('g-stage');
+      const items = Array.from(document.querySelectorAll('.g-item'));
+      const floats = items.map(i => i.querySelector('.g-float'));
+      const cards = items.map(i => i.querySelector('.g-card'));
+      const medias = items.map(i => i.querySelector('.g-media'));
+      const imgs = items.map(i => i.querySelector('.g-img'));
+      const shines = items.map(i => i.querySelector('.g-shine'));
+
+      // random depth factor per card (0.7..1.2)
+      const depth = items.map(() => 0.7 + Math.random() * 0.5);
+
+      // Floating animation on wrapper so it doesn't conflict with tilt
+      if (!prefersReduced) {
+        floats.forEach((el, i) => {
+          const d = 6 + Math.random() * 6;
+          const r = 0.2 + Math.random() * 0.25;
+          gsap.to(el, { y: d, rotationZ: (Math.random() * 1.2 - 0.6), duration: 2.6 + Math.random() * 1.4, yoyo: true, repeat: -1, ease: 'sine.inOut', delay: i * 0.07 });
+        });
+      }
+
+      // Hover focus: amplify tilt, show shine
+      items.forEach((item, idx) => {
+        item.addEventListener('pointerenter', () => {
+          shines[idx].style.opacity = '1';
+          gsap.to(medias[idx], { scale: 1.025, duration: 0.35, ease: 'power2.out' });
+        });
+        item.addEventListener('pointerleave', () => {
+          shines[idx].style.opacity = '0';
+          gsap.to(cards[idx], { rotationX: 0, rotationY: 0, duration: 0.5, ease: 'power3.out' });
+          gsap.to(imgs[idx], { x: 0, y: 0, duration: 0.5, ease: 'power3.out' });
+          gsap.to(medias[idx], { scale: 1, duration: 0.35, ease: 'power2.out' });
+        });
+      });
+
+      function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+      // Pointer-based tilt across the whole stage
+      stage.addEventListener('pointermove', (e) => {
+        const rect = stage.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+        const nx = clamp((mx - cx) / cx, -1, 1); // -1..1
+        const ny = clamp((my - cy) / cy, -1, 1); // -1..1
+
+        items.forEach((item, i) => {
+          const rectItem = item.getBoundingClientRect();
+          const icx = rectItem.left + rectItem.width / 2;
+          const icy = rectItem.top + rectItem.height / 2;
+          const dx = clamp((e.clientX - icx) / (rectItem.width / 2), -1, 1);
+          const dy = clamp((e.clientY - icy) / (rectItem.height / 2), -1, 1);
+
+          const isHover = item.matches(':hover');
+          const maxTilt = isHover ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hover-tilt')) : parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--max-tilt'));
+          const rotY = nx * maxTilt * depth[i] + dx * maxTilt * 0.35; // combine global and local
+          const rotX = -ny * maxTilt * depth[i] - dy * maxTilt * 0.35;
+          const imgParallax = 12 * depth[i];
+
+          gsap.to(cards[i], { rotationY: rotY, rotationX: rotX, transformOrigin: 'center center', duration: 0.35, ease: 'power3.out' });
+          gsap.to(imgs[i], { x: dx * imgParallax, y: dy * imgParallax, duration: 0.35, ease: 'power3.out' });
+
+          // Move shine center under pointer relative to card
+          const lx = clamp((e.clientX - rectItem.left) / rectItem.width, 0, 1) * 100;
+          const ly = clamp((e.clientY - rectItem.top) / rectItem.height, 0, 1) * 100;
+          shines[i].style.background = `radial-gradient(400px 300px at ${lx}% ${ly}%, rgba(255,255,255,0.22), rgba(255,255,255,0.06) 40%, transparent 60%)`;
+        });
+      }, { passive: true });
+
+      // Resize handler keeps transforms snappy
+      window.addEventListener('resize', () => {
+        cards.forEach((c, i) => { gsap.set(c, { rotationX: 0, rotationY: 0 }); gsap.set(imgs[i], { x:0, y:0 }); });
+      });
+
+      // Filters
+      const filterBar = document.getElementById('g-filters');
+      const filterButtons = filterBar ? Array.from(filterBar.querySelectorAll('button[data-filter]')) : [];
+      function applyFilter(cat){
+        filterButtons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.filter === cat)));
+        items.forEach((item) => {
+          const show = (cat === 'all') || (item.dataset.cat === cat);
+          if (show){
+            item.classList.remove('hidden');
+            gsap.fromTo(item, { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.3, ease: 'power2.out' });
+          } else {
+            gsap.to(item, { autoAlpha: 0, y: 12, duration: 0.2, ease: 'power2.in', onComplete: () => item.classList.add('hidden') });
+          }
+        });
+      }
+      filterButtons.forEach(btn => btn.addEventListener('click', () => applyFilter(btn.dataset.filter)));
+
+      // Lightbox
+      const lb = document.getElementById('g-lightbox');
+      const lbBackdrop = document.getElementById('g-lightbox-backdrop');
+      const lbClose = document.getElementById('g-lightbox-close');
+      const lbImg = document.getElementById('g-lightbox-img');
+      const lbTitle = document.getElementById('g-lightbox-title');
+      const btnPrev = document.getElementById('g-prev');
+      const btnNext = document.getElementById('g-next');
+      let currentIndex = 0;
+      const sources = imgs.map((img, i) => ({ src: img.currentSrc || img.src, alt: img.alt || `Project ${i+1}` }));
+      function openLightbox(index){
+        currentIndex = index;
+        const d = sources[currentIndex];
+        lbImg.src = d.src; lbImg.alt = d.alt; lbTitle.textContent = d.alt;
+        lb.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        gsap.fromTo(lb, { opacity: 0 }, { opacity: 1, duration: 0.2 });
+        gsap.fromTo(lbImg, { scale: 0.96, y: 12, opacity: 0 }, { scale: 1, y: 0, opacity: 1, duration: 0.35, ease: 'power2.out' });
+      }
+      function closeLightbox(){
+        gsap.to(lb, { opacity: 0, duration: 0.15, onComplete: () => { lb.classList.add('hidden'); document.body.style.overflow = ''; } });
+      }
+      function navigate(delta){
+        currentIndex = (currentIndex + delta + sources.length) % sources.length;
+        const d = sources[currentIndex];
+        gsap.to(lbImg, { opacity: 0, y: 10, duration: 0.15, onComplete: () => {
+          lbImg.src = d.src; lbImg.alt = d.alt; lbTitle.textContent = d.alt;
+          gsap.fromTo(lbImg, { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.18 });
+        }});
+      }
+      items.forEach((item, i) => item.addEventListener('click', () => openLightbox(i)));
+      lbBackdrop && lbBackdrop.addEventListener('click', closeLightbox);
+      lbClose && lbClose.addEventListener('click', closeLightbox);
+      btnPrev && btnPrev.addEventListener('click', () => navigate(-1));
+      btnNext && btnNext.addEventListener('click', () => navigate(1));
+      document.addEventListener('keydown', (e) => {
+        if (lb.classList.contains('hidden')) return;
+        if (e.key === 'Escape') closeLightbox();
+        else if (e.key === 'ArrowLeft') navigate(-1);
+        else if (e.key === 'ArrowRight') navigate(1);
+      });
+    });
+  </script>
+</body>
+</html>

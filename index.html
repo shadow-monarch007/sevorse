@@ -1,0 +1,2840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>SEVORSE - You Know the Business, We Know the Tech</title>
+    <meta name="description" content="SEVORSE builds agentic copilots, AI/AR solutions, and modern business apps with premium design and performance.">
+    <meta property="og:title" content="SEVORSE — You Know the Business, We Know the Tech">
+    <meta property="og:description" content="Agentic copilots, AI/AR solutions, and modern business apps—built for outcomes.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="images/sevorse-logo.png" type="image/png">
+    
+    <!-- Tailwind CSS - Using CDN for development -->
+    <!-- TODO: For production, install Tailwind as PostCSS plugin or use Tailwind CLI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'sevorse-blue': '#1976D2',
+                        'sevorse-dark-blue': '#1565C0',
+                        'sevorse-charcoal': '#1C2A33',
+                        'pure-white': '#FFFFFF',
+                        'jet-black': '#000000',
+                        'sevorse-light-blue': '#4AA8F0',
+                        'sevorse-gray': '#6B7280'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'display': ['Space Grotesk', 'sans-serif']
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Project Stylesheet -->
+    <link rel="stylesheet" href="styles.css?v=20251006-3" />
+
+    <!-- Custom Styles -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+        
+        * {
+            scroll-behavior: smooth;
+        }
+        
+        /* Mobile Performance Optimizations */
+        @media (max-width: 768px) {
+            * {
+                -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+                -webkit-touch-callout: none;
+            }
+            
+            /* Optimize animations for mobile */
+            .ai-core-container {
+                width: 300px !important;
+                height: 300px !important;
+            }
+            
+            .energy-ring {
+                opacity: 0.6;
+            }
+            
+            .mini-energy-core {
+                display: none; /* Hide mini cores on mobile for performance */
+            }
+            
+            /* Reduce particle count on mobile */
+            .particle:nth-child(n+4) {
+                display: none;
+            }
+        }
+        
+        :root {
+            --sevorse-blue: #1976D2;
+            --sevorse-dark-blue: #1565C0;
+            --sevorse-charcoal: #1C2A33;
+            --pure-white: #FFFFFF;
+            --jet-black: #000000;
+            --sevorse-light-blue: #4AA8F0;
+            --sevorse-gray: #6B7280;
+            /* Accent picked from brand "R" (adjust here once you confirm exact hex) */
+            /* Darker brand accent from the “R” in logo */
+            --sevorse-accent: #0B4DA2;
+            /* Added missing tokens referenced in styles */
+            --accent-gold: #D4AF37;
+            --bg-dark: #0b1220;
+            --text-primary: #000000;
+            --text-secondary: #6B7280;
+            --text-light: #FFFFFF;
+            --glass-bg: rgba(1, 142, 239, 0.05);
+            --glass-border: rgba(1, 142, 239, 0.1);
+        }
+        
+        :root {
+            background: #ffffff;
+            --sevorse-accent: #0B4DA2; /* darker brand accent from logo */
+            --sevorse-deep-blue: #0B3B8A; /* deeper primary for darker buttons */
+            --sevorse-night: #0a1629; /* tinted night blue for glass buttons */
+            overflow-x: hidden;
+            font-feature-settings: "liga" 1, "kern" 1;
+            -moz-osx-font-smoothing: grayscale;
+            color: var(--text-primary);
+        }
+        
+        /* Custom cursor styles applied dynamically by JavaScript */
+        body.custom-cursor-active,
+        body.custom-cursor-active * {
+            cursor: none !important;
+        }
+
+        /* Fallback cursor styles in case styles.css fails to load */
+        .cursor-ring, .cursor-dot {
+            position: fixed; pointer-events: none; z-index: 99999; will-change: transform; left: 0; top: 0;
+        }
+        .cursor-ring { width: 24px; height: 24px; border: 2px solid rgba(25,118,210,0.9); border-radius: 50%;
+            transition: transform 120ms ease, border-color 120ms ease; mix-blend-mode: normal;
+            filter: drop-shadow(0 0 4px rgba(0,0,0,0.35)); opacity: 1; transform: translate(-50%, -50%);
+        }
+        .cursor-dot { width: 6px; height: 6px; background: rgba(25,118,210,1); border-radius: 50%;
+            transition: opacity 120ms ease, background 120ms ease; opacity: 1; transform: translate(-50%, -50%);
+        }
+
+        /* Accessibility: restore native cursors where appropriate without visual change */
+        input, textarea, select, [contenteditable="true"] { cursor: auto !important; }
+        a, button, [role="button"] { cursor: pointer !important; }
+        
+
+        
+        /* Advanced Grid System */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: clamp(1rem, 3vw, 2rem);
+        }
+        
+        /* Framer-style Cards */
+        .framer-card {
+            background: linear-gradient(135deg, 
+                rgba(1, 142, 239, 0.08) 0%, 
+                rgba(0, 71, 153, 0.02) 100%);
+            backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: clamp(1.5rem, 4vw, 3rem);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-style: preserve-3d;
+        }
+        
+        .framer-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+        
+        .framer-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: linear-gradient(135deg, 
+                rgba(1, 142, 239, 0.12) 0%, 
+                rgba(0, 71, 153, 0.04) 100%);
+            border-color: rgba(1, 142, 239, 0.3);
+            box-shadow: 
+                0 32px 64px -12px rgba(1, 142, 239, 0.1),
+                0 0 0 1px rgba(1, 142, 239, 0.05),
+                inset 0 1px 0 rgba(1, 142, 239, 0.1);
+        }
+        
+        .framer-card:hover::before {
+            opacity: 1;
+        }
+        /* Testimonials marquee: prevent inherited nowrap from clipping text inside cards */
+        #testimonials-track .framer-card { white-space: normal; }
+        #testimonials-track .testimonial-quote { white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
+        
+        /* Typography Enhancements */
+        .display-text {
+            font-family: 'Space Grotesk', monospace;
+            font-weight: 800;
+            line-height: 0.9;
+            letter-spacing: -0.04em;
+            color: #000000;
+        }
+        
+        /* Advanced Button Styles */
+        .btn-primary {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            padding: 1rem 2.5rem;
+            /* Darker primary gradient */
+            background: linear-gradient(135deg, var(--sevorse-deep-blue), var(--sevorse-accent));
+            border: none;
+            border-radius: 999px;
+            color: var(--pure-white);
+            font-weight: 600;
+            font-size: 1rem;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 30px rgba(11,77,162,0.35);
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(245,245,220,0.3), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .btn-primary:hover::before { left: 100%; }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 16px 40px rgba(11,77,162,0.45); }
+        .btn-primary:focus-visible { outline: 3px solid rgba(37,99,235,.5); outline-offset: 2px; }
+        
+        /* ===== 3D AI ENERGY CORE ANIMATION ===== */
+        .ai-core-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1200px;
+            transform-style: preserve-3d;
+        }
+        
+        /* Rotating Energy Rings */
+        .energy-ring {
+            position: absolute;
+            border: 2px solid rgba(59, 130, 246, 0.4);
+            border-radius: 50%;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+        
+        .ring-1 {
+            width: 400px;
+            height: 400px;
+            border-color: rgba(96, 165, 250, 0.5);
+            animation: rotateRing1 20s linear infinite;
+            box-shadow: 0 0 30px rgba(96, 165, 250, 0.3), inset 0 0 30px rgba(96, 165, 250, 0.2);
+        }
+        
+        .ring-2 {
+            width: 320px;
+            height: 320px;
+            border-color: rgba(59, 130, 246, 0.6);
+            animation: rotateRing2 15s linear infinite reverse;
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.4), inset 0 0 25px rgba(59, 130, 246, 0.2);
+        }
+        
+        .ring-3 {
+            width: 450px;
+            height: 450px;
+            border-color: rgba(37, 99, 235, 0.4);
+            animation: rotateRing3 25s linear infinite;
+            box-shadow: 0 0 35px rgba(37, 99, 235, 0.25), inset 0 0 35px rgba(37, 99, 235, 0.15);
+        }
+        
+        /* Tesseract Cube Container */
+        .tesseract-cube {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            transform-style: preserve-3d;
+            animation: rotateTesseract 20s linear infinite;
+        }
+        
+        /* Cube Styling */
+        .cube {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+        
+        .inner-cube {
+            width: 140px;
+            height: 140px;
+            left: 30px;
+            top: 30px;
+            animation: rotateInnerCube 15s linear infinite reverse;
+        }
+        
+        .outer-cube {
+            animation: rotateOuterCube 18s linear infinite;
+        }
+        
+        .cube-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(96, 165, 250, 0.15));
+            border: 1px solid rgba(96, 165, 250, 0.6);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+            overflow: hidden;
+            backface-visibility: hidden;
+            will-change: transform;
+        }
+        
+        /* Rubik's cube grid lines */
+        .cube-face::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: 
+                linear-gradient(0deg, transparent 32.5%, rgba(96, 165, 250, 0.4) 33%, rgba(96, 165, 250, 0.4) 33.5%, transparent 34%),
+                linear-gradient(0deg, transparent 65.5%, rgba(96, 165, 250, 0.4) 66%, rgba(96, 165, 250, 0.4) 66.5%, transparent 67%),
+                linear-gradient(90deg, transparent 32.5%, rgba(96, 165, 250, 0.4) 33%, rgba(96, 165, 250, 0.4) 33.5%, transparent 34%),
+                linear-gradient(90deg, transparent 65.5%, rgba(96, 165, 250, 0.4) 66%, rgba(96, 165, 250, 0.4) 66.5%, transparent 67%);
+            pointer-events: none;
+        }
+        
+        .cube-face.front  { transform: translateZ(100px); }
+        .cube-face.back   { transform: translateZ(-100px) rotateY(180deg); }
+        .cube-face.left   { transform: rotateY(-90deg) translateZ(100px); }
+        .cube-face.right  { transform: rotateY(90deg) translateZ(100px); }
+        .cube-face.top    { transform: rotateX(90deg) translateZ(100px); }
+        .cube-face.bottom { transform: rotateX(-90deg) translateZ(100px); }
+        
+        .inner-cube .cube-face.front  { transform: translateZ(70px); }
+        .inner-cube .cube-face.back   { transform: translateZ(-70px) rotateY(180deg); }
+        .inner-cube .cube-face.left   { transform: rotateY(-90deg) translateZ(70px); }
+        .inner-cube .cube-face.right  { transform: rotateY(90deg) translateZ(70px); }
+        .inner-cube .cube-face.top    { transform: rotateX(90deg) translateZ(70px); }
+        .inner-cube .cube-face.bottom { transform: rotateX(-90deg) translateZ(70px); }
+        
+        /* Energy Particles */
+        .energy-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(96, 165, 250, 0.8);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(96, 165, 250, 0.6);
+            will-change: transform;
+            backface-visibility: hidden;
+        }
+        
+        /* Mini Energy Cores - Floating around main cube */
+        .mini-energy-core {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+            will-change: transform;
+            backface-visibility: hidden;
+        }
+        
+        .mini-core-inner {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(96, 165, 250, 0.6), rgba(59, 130, 246, 0.4), transparent);
+            border: 1px solid rgba(96, 165, 250, 0.7);
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(96, 165, 250, 0.6), inset 0 0 10px rgba(59, 130, 246, 0.4);
+            animation: miniCorePulse 2s ease-in-out infinite alternate;
+        }
+        
+        .mini-core-ring {
+            position: absolute;
+            width: 140%;
+            height: 140%;
+            top: -20%;
+            left: -20%;
+            border: 1px solid rgba(96, 165, 250, 0.3);
+            border-radius: 50%;
+            animation: miniCoreRing 3s linear infinite;
+        }
+        
+        .particle-1 { animation: orbit1 8s linear infinite; }
+        .particle-2 { animation: orbit2 10s linear infinite; }
+        .particle-3 { animation: orbit3 7s linear infinite; }
+        .particle-4 { animation: orbit4 9s linear infinite reverse; }
+        .particle-5 { animation: orbit5 11s linear infinite; }
+        .particle-6 { animation: orbit6 6s linear infinite reverse; }
+        
+        /* Mini energy core orbital animations - Reduced to 4 for performance */
+        .mini-energy-core:nth-child(1) { animation: floatOrbit1 12s linear infinite; }
+        .mini-energy-core:nth-child(2) { animation: floatOrbit2 14s linear infinite reverse; }
+        .mini-energy-core:nth-child(3) { animation: floatOrbit3 16s linear infinite; }
+        .mini-energy-core:nth-child(4) { animation: floatOrbit4 13s linear infinite reverse; }
+        
+        /* Core Glow */
+        .core-glow {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(96, 165, 250, 0.3), rgba(59, 130, 246, 0.1), transparent);
+            border-radius: 50%;
+            filter: blur(30px);
+            animation: pulseCoreGlow 3s ease-in-out infinite alternate;
+        }
+        
+        /* Animations */
+        @keyframes rotateRing1 {
+            0% { transform: rotateX(60deg) rotateY(0deg); }
+            100% { transform: rotateX(60deg) rotateY(360deg); }
+        }
+        
+        @keyframes rotateRing2 {
+            0% { transform: rotateX(45deg) rotateY(0deg); }
+            100% { transform: rotateX(45deg) rotateY(360deg); }
+        }
+        
+        @keyframes rotateRing3 {
+            0% { transform: rotateX(75deg) rotateY(0deg); }
+            100% { transform: rotateX(75deg) rotateY(360deg); }
+        }
+        
+        @keyframes rotateTesseract {
+            0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
+        }
+        
+        @keyframes rotateInnerCube {
+            0% { transform: rotateX(0deg) rotateY(0deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+        
+        @keyframes rotateOuterCube {
+            0% { transform: rotateZ(0deg) rotateX(0deg); }
+            100% { transform: rotateZ(360deg) rotateX(360deg); }
+        }
+        
+        @keyframes orbit1 {
+            0% { transform: rotate(0deg) translateX(180px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(180px) rotate(-360deg); }
+        }
+        
+        @keyframes orbit2 {
+            0% { transform: rotate(60deg) translateX(200px) rotate(-60deg); }
+            100% { transform: rotate(420deg) translateX(200px) rotate(-420deg); }
+        }
+        
+        @keyframes orbit3 {
+            0% { transform: rotate(120deg) translateX(160px) rotate(-120deg); }
+            100% { transform: rotate(480deg) translateX(160px) rotate(-480deg); }
+        }
+        
+        @keyframes orbit4 {
+            0% { transform: rotate(180deg) translateX(190px) rotate(-180deg); }
+            100% { transform: rotate(540deg) translateX(190px) rotate(-540deg); }
+        }
+        
+        @keyframes orbit5 {
+            0% { transform: rotate(240deg) translateX(210px) rotate(-240deg); }
+            100% { transform: rotate(600deg) translateX(210px) rotate(-600deg); }
+        }
+        
+        @keyframes orbit6 {
+            0% { transform: rotate(300deg) translateX(170px) rotate(-300deg); }
+            100% { transform: rotate(660deg) translateX(170px) rotate(-660deg); }
+        }
+        
+        @keyframes pulseCoreGlow {
+            0% { transform: scale(1); opacity: 0.3; }
+            100% { transform: scale(1.2); opacity: 0.6; }
+        }
+        
+        @keyframes miniCorePulse {
+            0% { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(1.15); opacity: 0.9; }
+        }
+        
+        @keyframes miniCoreRing {
+            0% { transform: rotate(0deg); opacity: 0.4; }
+            100% { transform: rotate(360deg); opacity: 0.4; }
+        }
+        
+        /* Floating mini core orbital paths */
+        @keyframes floatOrbit1 {
+            0% { transform: rotate(0deg) translateX(280px) rotate(0deg) translateY(-30px); }
+            100% { transform: rotate(360deg) translateX(280px) rotate(-360deg) translateY(-30px); }
+        }
+        
+        @keyframes floatOrbit2 {
+            0% { transform: rotate(45deg) translateX(300px) rotate(-45deg) translateY(40px); }
+            100% { transform: rotate(405deg) translateX(300px) rotate(-405deg) translateY(40px); }
+        }
+        
+        @keyframes floatOrbit3 {
+            0% { transform: rotate(90deg) translateX(260px) rotate(-90deg) translateY(-50px); }
+            100% { transform: rotate(450deg) translateX(260px) rotate(-450deg) translateY(-50px); }
+        }
+        
+        @keyframes floatOrbit4 {
+            0% { transform: rotate(135deg) translateX(290px) rotate(-135deg) translateY(20px); }
+            100% { transform: rotate(495deg) translateX(290px) rotate(-495deg) translateY(20px); }
+        }
+        
+        @keyframes floatOrbit5 {
+            0% { transform: rotate(180deg) translateX(270px) rotate(-180deg) translateY(-40px); }
+            100% { transform: rotate(540deg) translateX(270px) rotate(-540deg) translateY(-40px); }
+        }
+        
+        @keyframes floatOrbit6 {
+            0% { transform: rotate(225deg) translateX(310px) rotate(-225deg) translateY(35px); }
+            100% { transform: rotate(585deg) translateX(310px) rotate(-585deg) translateY(35px); }
+        }
+        
+        @keyframes floatOrbit7 {
+            0% { transform: rotate(270deg) translateX(275px) rotate(-270deg) translateY(-25px); }
+            100% { transform: rotate(630deg) translateX(275px) rotate(-630deg) translateY(-25px); }
+        }
+        
+        @keyframes floatOrbit8 {
+            0% { transform: rotate(315deg) translateX(295px) rotate(-315deg) translateY(45px); }
+            100% { transform: rotate(675deg) translateX(295px) rotate(-675deg) translateY(45px); }
+        }
+        
+        /* Secondary glass/outline button with gradient border + shimmer */
+                .btn-ghost {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            padding: 1rem 2.5rem;
+            border-radius: 999px;
+            color: var(--pure-white);
+                        /* Darker glass fill with gradient border */
+                        background:
+                            linear-gradient(rgba(10,22,41,0.28), rgba(10,22,41,0.28)) padding-box,
+                            linear-gradient(135deg, rgba(34,211,238,0.7), rgba(37,99,235,0.7)) border-box;
+            border: 1.5px solid transparent;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-ghost::before {
+            content: '';
+            position: absolute; inset: 0; left: -120%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+            transition: left .6s ease;
+        }
+        .btn-ghost:hover::before { left: 120%; }
+      .btn-ghost:hover { transform: translateY(-1px); box-shadow: 0 18px 44px rgba(11,77,162,0.35), 0 0 0 1px rgba(37,99,235,0.25) inset; background:
+          linear-gradient(rgba(10,22,41,0.4), rgba(10,22,41,0.4)) padding-box,
+          linear-gradient(135deg, rgba(34,211,238,0.85), rgba(37,99,235,0.85)) border-box; }
+        .btn-ghost:focus-visible { outline: 3px solid rgba(255,255,255,0.5); outline-offset: 2px; }
+
+        /* Nav: Ask AI pill button (dark glass with blue icon) */
+        .btn-ask-ai {
+            position: relative;
+            display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+            padding: .85rem 1.4rem; border-radius: 999px; color: #fff;
+            background: rgba(12,18,28,0.7);
+            border: 1px solid rgba(1,142,239,0.25);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 22px rgba(1,142,239,0.20);
+            transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease, background .25s ease;
+        }
+    /* On hover: shift to dark blue */
+    .btn-ask-ai:hover { transform: translateY(-1px); border-color: rgba(1,142,239,0.45); background: linear-gradient(135deg, var(--sevorse-accent), var(--sevorse-dark-blue)); box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 14px 32px rgba(1,142,239,0.35); }
+        .btn-ask-ai:focus-visible { outline: 3px solid rgba(1,142,239,0.5); outline-offset: 2px; }
+
+                /* Pricing overlay background - Animated Energy Waves */
+                .pricing-bg { 
+                    position: absolute; 
+                    inset: 0; 
+                    background: linear-gradient(135deg, #0a0e1a, #1a1e2a, #0a0e1a);
+                    overflow: hidden;
+                    z-index: 0;
+                }
+                
+                /* Wave layer 1 - Horizontal flowing waves */
+                .wave-layer-1 {
+                    position: absolute;
+                    inset: 0;
+                    background: 
+                        radial-gradient(ellipse 800px 400px at 20% 50%, rgba(59,130,246,0.15), transparent 50%),
+                        radial-gradient(ellipse 800px 400px at 80% 50%, rgba(96,165,250,0.12), transparent 50%);
+                    animation: waveMove1 8s ease-in-out infinite alternate;
+                    opacity: 0.6;
+                }
+                
+                /* Wave layer 2 - Counter-movement waves */
+                .wave-layer-2 {
+                    position: absolute;
+                    inset: 0;
+                    background: 
+                        radial-gradient(ellipse 1000px 300px at 50% 30%, rgba(37,99,235,0.18), transparent 60%),
+                        radial-gradient(ellipse 900px 350px at 50% 70%, rgba(59,130,246,0.14), transparent 55%);
+                    animation: waveMove2 10s ease-in-out infinite alternate-reverse;
+                    opacity: 0.5;
+                    filter: blur(40px);
+                }
+                
+                /* Wave glow - Subtle flowing glow effect */
+                .wave-glow {
+                    position: absolute;
+                    inset: 0;
+                    background: 
+                        radial-gradient(ellipse 600px 200px at 30% 40%, rgba(96,165,250,0.08), transparent 45%),
+                        radial-gradient(ellipse 700px 250px at 70% 60%, rgba(59,130,246,0.1), transparent 50%);
+                    animation: waveGlow 12s ease-in-out infinite alternate;
+                    filter: blur(60px);
+                }
+                
+                @keyframes waveMove1 {
+                    0% { transform: translateX(-10%) translateY(-5%) scale(1); }
+                    50% { transform: translateX(5%) translateY(3%) scale(1.05); }
+                    100% { transform: translateX(10%) translateY(-3%) scale(1.02); }
+                }
+                
+                @keyframes waveMove2 {
+                    0% { transform: translateX(8%) translateY(5%) scale(1); }
+                    50% { transform: translateX(-5%) translateY(-4%) scale(1.08); }
+                    100% { transform: translateX(-12%) translateY(4%) scale(1.03); }
+                }
+                
+                @keyframes waveGlow {
+                    0% { transform: translateX(-8%) translateY(-8%) scale(1); opacity: 0.3; }
+                    50% { transform: translateX(8%) translateY(6%) scale(1.1); opacity: 0.5; }
+                    100% { transform: translateX(-5%) translateY(-6%) scale(1.05); opacity: 0.4; }
+                }
+
+            .pricing-wrap { 
+            position: relative;
+            z-index: 1;
+            width: 100%; 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            padding: 1rem; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 1rem; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
+
+        /* Membership Card Wrapper - Top Section */
+        .membership-card-wrapper { 
+            width: 100%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        /* Membership Card - Grid Layout for Content */
+        .membership-card { 
+            position: relative; 
+            width: 100%; 
+            max-width: 950px; 
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+            border-radius: 16px; 
+            padding: 20px 28px; 
+            color: #e5e7eb; 
+            background: linear-gradient(135deg, rgba(30,35,45,0.98), rgba(40,45,55,0.96)); 
+            border: 2px solid rgba(59,130,246,0.6); 
+            box-shadow: 0 0 40px rgba(59,130,246,0.5), 
+                        0 0 80px rgba(37,99,235,0.3), 
+                        0 20px 60px rgba(0,0,0,0.6), 
+                        inset 0 1px 0 rgba(96,165,250,0.12); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px); 
+            transition: all 0.4s ease; 
+            will-change: box-shadow, border-color; 
+            transform: translateZ(0);
+            overflow: hidden;
+        }
+
+        .membership-card:hover {
+            border-color: rgba(59,130,246,0.9);
+            box-shadow: 0 0 60px rgba(59,130,246,0.7), 
+                        0 0 120px rgba(37,99,235,0.5),
+                        0 25px 70px rgba(0,0,0,0.7);
+        }
+
+        /* Membership Toggle - Glassy Style in Top Right */
+        .membership-toggle { 
+            position: absolute; 
+            top: 24px; 
+            right: 80px; /* move a bit towards the left (inwards) */
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .toggle-text {
+            font-size: 11px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            user-select: none;
+            order: -1;
+            display: none; /* Hide external label – we render it inside the track */
+        }
+
+        /* Glassy Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 28px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(52, 58, 70, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 999px;
+            border: 1.5px solid rgba(148, 163, 184, 0.2);
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+            width: 76px;  /* Larger, like reference */
+            height: 34px; /* Larger, like reference */
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px; /* larger knob */
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 1), rgba(245, 248, 250, 0.98));
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25), 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* Remove in-track label */
+        .toggle-slider::after { content: ""; display: none; }
+
+        input:checked + .toggle-slider {
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.85), rgba(59, 130, 246, 0.9));
+            border-color: rgba(96, 165, 250, 0.3);
+            box-shadow: inset 0 2px 6px rgba(37, 99, 235, 0.4), 0 0 16px rgba(59, 130, 246, 0.4), 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(42px); /* move to the right edge for 76px track */
+            background: linear-gradient(145deg, rgba(255, 255, 255, 1), rgba(248, 250, 252, 1));
+            box-shadow: 0 3px 8px rgba(37, 99, 235, 0.4), 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        input:checked + .toggle-slider::after { display: none; }
+
+        /* Packages Row - Horizontal 3 Cards */
+        .packages-row { 
+            display: flex; 
+            gap: 16px; 
+            justify-content: center; 
+            align-items: stretch;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        /* Package Card - Smaller Size */
+        .package-card { 
+            position: relative; 
+            flex: 1; 
+            max-width: 320px;
+            display: flex; 
+            flex-direction: column; 
+            border-radius: 16px; 
+            padding: 20px 18px; 
+            color: #e5e7eb; 
+            background: linear-gradient(135deg, rgba(20,25,35,0.98), rgba(30,35,45,0.95)); 
+            border: 2px solid rgba(100,116,139,0.25); 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px); 
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+            will-change: transform, opacity, border-color; 
+            transform: translateZ(0);
+            overflow: hidden;
+        }
+
+        /* Blurred State - When Toggle is OFF */
+        .package-card.blurred {
+            filter: blur(8px);
+            opacity: 0.5;
+            pointer-events: none;
+            transform: scale(0.98);
+        }
+
+        /* Clear State - When Toggle is ON */
+        .package-card:not(.blurred) {
+            filter: blur(0);
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Hover effect - 3D tilt and floating */
+        .package-card:not(.blurred):hover {
+            transform: translateY(-12px) scale(1.02) perspective(1000px) rotateY(2deg) rotateX(-2deg);
+            border-color: rgba(59,130,246,0.6);
+            box-shadow: 
+                0 30px 80px rgba(0,0,0,0.6),
+                0 0 40px rgba(59,130,246,0.4),
+                inset 0 1px 0 rgba(96,165,250,0.15);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Premium badge */
+        .pp-badge { 
+            position: absolute; 
+            top: -12px; 
+            right: 24px; 
+            background: linear-gradient(90deg, #3b82f6, #2563eb); 
+            color: #fff; 
+            padding: 5px 14px; 
+            border-radius: 16px; 
+            font-size: 9px; 
+            font-weight: 800; 
+            letter-spacing: 0.6px; 
+            box-shadow: 0 4px 16px rgba(59,130,246,0.6); 
+            z-index: 1; 
+            text-transform: uppercase; 
+            display: none; /* hide badges on all cards as requested */
+        }
+
+        /* Reposition membership badge to top-left (inside the card) to avoid clipping and toggle overlap */
+        .membership-card .pp-badge { display: none; }
+
+        /* Membership features: split 6 points into two columns (3 + 3), slightly left-shift */
+        .membership-card .pp-feat {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            column-gap: 24px;
+            row-gap: 10px;
+            justify-items: start;
+            padding: 0;
+            margin: 0;
+            margin-right: 100px; /* push features left, away from toggle */
+        }
+
+        /* Add a bit of space between package name and price */
+        .package-card .pp-title {
+            margin-bottom: 8px; /* increase from default 2px for better separation */
+        }
+
+        /* Card Inner Content */
+        .pp-card-inner { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            transform-origin: center; 
+            transition: transform .18s ease;
+            min-height: 0;
+        }
+
+        .pp-card-inner.is-pressed { 
+            transition: transform .1s ease; 
+        }
+
+        @keyframes pp-wobble { 
+            0%{ transform: perspective(1000px) rotateX(0) rotateY(0) scale(1); } 
+            25%{ transform: perspective(1000px) rotateZ(0.6deg) scale(0.995);} 
+            50%{ transform: perspective(1000px) rotateZ(-0.9deg) scale(0.997);} 
+            75%{ transform: perspective(1000px) rotateZ(0.4deg) scale(0.998);} 
+            100%{ transform: perspective(1000px) rotateX(0) rotateY(0) rotateZ(0) scale(1);} 
+        }
+
+        .pp-card-inner.do-wobble { 
+            animation: pp-wobble 400ms ease-out; 
+        }
+
+        /* Typography */
+        .pp-title { 
+            font-size: 20px; 
+            font-weight: 800; 
+            color: #cbd5e1; 
+            margin-bottom: 2px; 
+            line-height: 1; 
+        }
+
+        .membership-card .pp-title {
+            color: #60a5fa;
+            font-size: 24px;
+            margin-bottom: 2px;
+        }
+
+        .pp-subtle { 
+            font-size: 10px; 
+            color: #94a3b8; 
+            margin-bottom: 10px; 
+            font-weight: 500; 
+            text-transform: uppercase; 
+            letter-spacing: 0.6px; 
+        }
+
+        .pp-price { 
+            display: flex; 
+            align-items: baseline; 
+            gap: 3px; 
+            color: #fff; 
+            margin-top: 3px; 
+            margin-bottom: 10px; 
+            flex-wrap: wrap; 
+        }
+
+        .pp-price .currency { 
+            font-size: 18px; 
+            font-weight: 900; 
+        }
+
+        .pp-price .num { 
+            font-size: 32px; 
+            font-weight: 900; 
+            line-height: 1; 
+            letter-spacing: -.02em; 
+        }
+
+        .membership-card .pp-price .num {
+            font-size: 32px;
+        }
+
+        .pp-price .per { 
+            font-size: 11px; 
+            opacity: .65; 
+            font-weight: 600; 
+        }
+
+        /* Features List - NO SCROLLBAR */
+        .pp-feat { 
+            margin-top: 8px; 
+            flex: 1; 
+            overflow: hidden; 
+            padding-right: 0;
+            min-height: 0;
+        }
+
+        .pp-feat li { 
+            display: flex; 
+            align-items: flex-start; 
+            gap: 7px; 
+            margin: 5px 0; 
+            color: #cbd5e1; 
+            font-size: 11px; 
+            line-height: 1.3; 
+        }
+
+        .membership-card .pp-feat li {
+            font-size: 11px;
+            margin: 5px 0;
+        }
+
+        .pp-feat svg { 
+            width: 14px; 
+            height: 14px; 
+            color: #10b981; 
+            flex-shrink: 0; 
+            margin-top: 1px; 
+        }
+
+        .membership-card .pp-feat svg { 
+            color: #60a5fa; 
+        }
+
+        /* CTA Buttons */
+        .pp-cta { 
+            width: 100%; 
+            margin-top: 10px; 
+            border-radius: 10px; 
+            padding: 11px 18px; 
+            font-weight: 800; 
+            font-size: 12px; 
+            border: none; 
+            cursor: pointer; 
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0)),
+                linear-gradient(135deg, #0c1e3a, #051428);
+            color: #fff; 
+            transition: all 0.3s ease; 
+            box-shadow: 0 6px 20px rgba(5,20,40,0.5), inset 0 1px 0 rgba(255,255,255,0.15); 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+            border: 1px solid rgba(12,30,58,0.6);
+        }
+
+        .pp-cta:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 30px rgba(5,20,40,0.65), inset 0 1px 0 rgba(255,255,255,0.2); 
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0)),
+                linear-gradient(135deg, #14274a, #0a1830);
+            border-color: rgba(20,39,74,0.7);
+        }
+
+        .membership-card .pp-cta { 
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0)),
+                linear-gradient(135deg, #1e3a8a, #0f2a6b);
+            box-shadow: 0 6px 20px rgba(15,42,107,0.45), inset 0 1px 0 rgba(255,255,255,0.2);
+            padding: 12px 40px;
+            font-size: 12px;
+            font-weight: 700;
+            max-width: 240px;
+            border: 1px solid rgba(30,64,175,0.55);
+        }
+
+        .membership-card .pp-cta:hover { 
+            box-shadow: 0 10px 28px rgba(15,42,107,0.55), inset 0 1px 0 rgba(255,255,255,0.25); 
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0)),
+                linear-gradient(135deg, #2540a2, #123187);
+            border-color: rgba(37, 99, 235, 0.55);
+        }
+
+        .pp-cta--green { 
+            background: linear-gradient(90deg, #10b981, #059669); 
+        }
+
+        .btn-secondary {
+            position: relative;
+            padding: 1rem 2.5rem;
+            background: transparent;
+            border: 2px solid var(--accent-gold);
+            border-radius: 999px;
+            color: var(--accent-gold);
+            font-weight: 600;
+            font-size: 1rem;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--accent-gold);
+            color: var(--bg-dark);
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+        }
+        
+        /* Navigation Styles */
+        .nav-glass {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(24px);
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-item {
+            position: relative;
+            padding: 0.5rem 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            font-size: 0.875rem;
+            color: #374151;
+        }
+        
+        .nav-item:hover {
+            color: var(--sevorse-accent);
+        }
+        
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--sevorse-accent);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-item:hover::after {
+            width: 100%;
+        }
+
+        .nav-item:focus-visible::after {
+            width: 100%;
+        }
+        
+        /* Dark sections with light text */
+        .dark-section {
+            background: var(--bg-dark);
+            color: var(--text-light);
+        }
+        
+        .dark-section h1,
+        .dark-section h2,
+        .dark-section h3,
+        .dark-section h4,
+        .dark-section h5,
+        .dark-section h6 {
+            color: var(--text-light);
+        }
+        
+        .dark-section p {
+            color: var(--text-secondary);
+        }
+
+        /* Floating Elements */
+        .floating-orb {
+            position: absolute;
+            width: clamp(60px, 8vw, 120px);
+            height: clamp(60px, 8vw, 120px);
+            border-radius: 50%;
+            background: linear-gradient(135deg, 
+                rgba(1, 142, 239, 0.2) 0%, 
+                rgba(0, 71, 153, 0.1) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(1, 142, 239, 0.3);
+            animation: float 8s ease-in-out infinite;
+            z-index: 1;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(120deg); }
+            66% { transform: translateY(15px) rotate(240deg); }
+        }
+        
+        @keyframes gradient-flow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        @keyframes glow {
+            0%, 100% {
+                text-shadow: 0 0 10px rgba(34, 211, 238, 0.5), 0 0 20px rgba(34, 211, 238, 0.3), 0 0 30px rgba(34, 211, 238, 0.2);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(34, 211, 238, 0.8), 0 0 30px rgba(34, 211, 238, 0.6), 0 0 40px rgba(34, 211, 238, 0.4);
+            }
+        }
+        
+        /* Hero Section */
+        .hero-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding: 6rem 0 4rem;
+            margin-top: 4rem;
+        }
+        
+        /* Optimized Sections for Scroll Animations */
+        .stackable-section {
+            position: relative;
+        }
+        
+        section {
+            position: relative;
+        }
+        
+        /* Optimized Sections for Scroll Animations */
+        .stackable-section {
+            position: relative;
+        }
+        
+        section {
+            position: relative;
+        }
+        
+        .hero-bg-gradient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(600px circle at 50% 0%, 
+                rgba(212, 175, 55, 0.1) 0%, 
+                rgba(139, 38, 53, 0.05) 40%, 
+                transparent 70%);
+            z-index: 0;
+        }
+        
+        /* Service Cards */
+        .service-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .service-card:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+            background: rgba(245, 245, 220, 0.08);
+        }
+        
+        /* Solutions card wobble on touch */
+        .service-card.is-pressed { transition: transform .12s ease; }
+        @keyframes service-wobble { 
+            0% { transform: perspective(1000px) rotateX(0) rotateY(0) scale(1); }
+            25% { transform: perspective(1000px) rotateZ(0.6deg) scale(0.995); }
+            50% { transform: perspective(1000px) rotateZ(-0.9deg) scale(0.997); }
+            75% { transform: perspective(1000px) rotateZ(0.4deg) scale(0.998); }
+            100% { transform: perspective(1000px) rotateX(0) rotateY(0) rotateZ(0) scale(1); }
+        }
+        .service-card.do-wobble { animation: service-wobble 450ms ease-out; }
+
+        /* Brand helpers */
+        .text-brand-accent { color: var(--sevorse-accent) !important; }
+        .bg-brand-accent { background-color: var(--sevorse-accent) !important; }
+        .btn-accent {
+            background: var(--sevorse-accent);
+            color: #fff;
+            border-radius: 0.75rem;
+            transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+            box-shadow: 0 10px 30px rgba(34,199,234,0.25);
+        }
+        .btn-accent:hover { filter: brightness(1.05); transform: translateY(-1px); box-shadow: 0 14px 34px rgba(34,199,234,0.35); }
+
+        /* IntersectionObserver reveal fallback */
+        .io-reveal { opacity: 0; transform: translateY(24px); transition: opacity .5s ease, transform .5s ease; }
+        .io-reveal.in-view { opacity: 1; transform: translateY(0); }
+        
+        /* Abyssal Blue Background for Card Stacking Area */
+        body {
+            background-color: #0a1628;
+            background-image: 
+                radial-gradient(at 20% 30%, rgba(15, 23, 42, 0.8) 0px, transparent 50%),
+                radial-gradient(at 80% 70%, rgba(30, 41, 59, 0.6) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+        
+        /* Normal Section Flow - No stacking overlap */
+        .stack-card {
+            position: relative;
+            background-color: inherit;
+            z-index: 1;
+        }
+        
+        /* Ensure sections have proper spacing */
+        section {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Ensure backgrounds are solid - no transparency bleeding */
+        #home.stack-card {
+            background: linear-gradient(to bottom right, rgb(3, 7, 18), rgb(0, 0, 0), rgb(3, 7, 18));
+        }
+        
+        #about.stack-card {
+            background-color: #0A0F1F !important;
+        }
+        
+        #services.stack-card {
+            background-color: #0b1220 !important;
+        }
+        
+        #products.stack-card {
+            background-color: #0b1220 !important;
+        }
+        
+        /* Ensure non-stacked sections have solid backgrounds */
+        #portfolio {
+            background-color: rgb(17, 24, 39) !important;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Remove the individual top/z-index rules - let GSAP handle the stacking */
+        #home.stack-card,
+        #about.stack-card,
+        #services.stack-card,
+        #products.stack-card {
+            position: relative;
+        }
+        
+        /* Solutions Animation - Simple */
+        .solutions-lottie-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Removed responsive downscales to keep desktop layout on mobile exactly */
+
+    /* Respect reduced motion preferences (no visual style change, just motion reduction) */
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+    }
+
+    /* Story modal: hide scrollbars but keep scrolling */
+    #story-scroller { -ms-overflow-style: none; scrollbar-width: none; }
+    #story-scroller::-webkit-scrollbar { display: none; }
+    
+    /* Vanta NET canvas positioning */
+    #vanta-rings-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+    }
+    
+    #vanta-rings-bg canvas {
+        position: absolute !important;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+        z-index: 1;
+    }
+    
+    /* Ensure about section content stays above Vanta canvas */
+    #about .container {
+        position: relative;
+        z-index: 10;
+    }
+    
+    /* Randomize button hover effects */
+    #randomize-rings-btn {
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+    
+    #randomize-rings-btn:hover {
+        background: linear-gradient(135deg, #00b7ff, #00ffc3);
+        box-shadow: 0 8px 25px rgba(0, 183, 255, 0.5);
+    }
+    </style>
+    
+    <!-- GSAP Library - Deferred loading -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
+    
+    <!-- Three.js and Vanta.js lazy loaded by initVantaRings() when needed -->
+</head>
+<body class="bg-deep-black text-beige font-sans overflow-x-hidden">
+
+    <!-- Hero Section with Integrated Navigation - Dayos Style -->
+    <section id="home" class="min-h-screen relative overflow-hidden bg-gradient-to-br from-gray-950 via-blue-950/20 to-black">
+        <!-- Futuristic Background Effects -->
+        <div class="absolute inset-0 pointer-events-none overflow-hidden">
+            <!-- Animated Grid -->
+            <div class="absolute inset-0 opacity-5">
+                <div class="absolute inset-0" style="background-image: linear-gradient(#1976D2 1px, transparent 1px), linear-gradient(90deg, #1976D2 1px, transparent 1px); background-size: 50px 50px;"></div>
+            </div>
+            
+            <!-- Glowing Orbs removed for cleaner design -->
+            
+            <!-- Floating Particles removed for cleaner design -->
+            
+            <!-- Scan Lines Effect -->
+            <div class="absolute inset-0 opacity-5" style="background: repeating-linear-gradient(0deg, transparent, transparent 2px, #1976D2 2px, #1976D2 4px);"></div>
+        </div>
+        
+        <!-- Integrated Navigation -->
+        <div class="absolute top-0 left-0 w-full z-50 px-4 md:px-6 lg:pl-12 lg:pr-24 py-4 md:py-6">
+            <div class="flex items-center w-full">
+                <!-- Left: Logo -->
+                <div class="flex-1">
+                    <div class="flex items-center">
+                        <img src="images/sevorse-logo-white.png" alt="SEVORSE" class="h-10 md:h-12 w-auto object-contain" loading="lazy">
+                    </div>
+                </div>
+                
+                <!-- Center: Navigation Links (Hidden on mobile) -->
+                <div class="flex items-center justify-center flex-1">
+                    <div class="hidden md:flex items-center bg-white/10 backdrop-blur-md rounded-full px-2 py-1 space-x-1 border border-white/20">
+                        <a href="#services" class="nav-item px-3 lg:px-4 py-2 text-white font-medium transition-all duration-300 text-xs lg:text-sm">Services</a>
+                        <a href="#portfolio" class="nav-item px-3 lg:px-4 py-2 text-white font-medium transition-all duration-300 text-xs lg:text-sm">Portfolio</a>
+                        <a href="about-progress.html" class="nav-item px-3 lg:px-4 py-2 text-white font-medium transition-all duration-300 text-xs lg:text-sm">About</a>
+                        <a href="#contact" class="nav-item px-3 lg:px-4 py-2 text-white font-medium transition-all duration-300 text-xs lg:text-sm">Contact</a>
+                    </div>
+                </div>
+                
+                <!-- Right: Mobile Menu Button & Ask AI Button -->
+                <div class="flex-1 flex justify-end items-center gap-3">
+                    <!-- Mobile Hamburger Menu -->
+                    <button id="mobile-menu-btn" class="md:hidden text-white p-2 rounded-lg hover:bg-white/10 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    
+                    <!-- Ask AI Button -->
+                    <a href="#contact" class="btn-ask-ai hidden sm:inline-flex">
+                        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 3l1.9 3.85L18 8.1l-3.1 2.3L14 14l-2-1.4L10 14l-.9-3.6L6 8.1l4.1-1.25L12 3z" stroke="#3BA3FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M20.5 11.5l-1.2.4.4 1.2-1.2-.4-.4 1.2-.4-1.2-1.2.4.4-1.2-1.2-.4 1.2-.4-.4-1.2 1.2.4.4-1.2.4 1.2 1.2-.4-.4 1.2 1.2.4z" fill="#3BA3FF" opacity=".85"/>
+                        </svg>
+                        Ask AI
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu Dropdown -->
+            <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 right-0 mt-2 mx-4 bg-gray-900/95 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden shadow-2xl">
+                <div class="flex flex-col py-2">
+                    <a href="#services" class="mobile-nav-item px-6 py-4 text-white font-medium hover:bg-white/10 transition-colors border-b border-white/5">Services</a>
+                    <a href="#portfolio" class="mobile-nav-item px-6 py-4 text-white font-medium hover:bg-white/10 transition-colors border-b border-white/5">Portfolio</a>
+                    <a href="about-progress.html" class="mobile-nav-item px-6 py-4 text-white font-medium hover:bg-white/10 transition-colors border-b border-white/5">About</a>
+                    <a href="#contact" class="mobile-nav-item px-6 py-4 text-white font-medium hover:bg-white/10 transition-colors">Contact</a>
+                    <a href="#contact" class="mobile-nav-item px-6 py-4 text-sevorse-blue font-semibold hover:bg-white/10 transition-colors border-t border-white/10 flex items-center gap-2">
+                        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 3l1.9 3.85L18 8.1l-3.1 2.3L14 14l-2-1.4L10 14l-.9-3.6L6 8.1l4.1-1.25L12 3z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Ask AI
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content Container -->
+        <div class="flex items-center min-h-screen px-4 sm:px-6 md:px-12 lg:pl-12 lg:pr-24 pt-16 sm:pt-20 md:pt-28 pb-4 relative z-10">
+            <div class="max-w-7xl w-full mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-12 lg:gap-16 items-center">
+                    <!-- Left Content -->
+                    <div class="space-y-3 sm:space-y-4 md:space-y-8">
+                        <!-- Clean Badge -->
+                        <button id="future-badge" class="inline-flex items-center px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-blue-500/20 backdrop-blur-md border border-blue-400/30 text-white text-xs sm:text-sm font-medium transition-colors duration-300">
+                            <span class="w-1.5 md:w-2 h-1.5 md:h-2 bg-cyan-400 rounded-full mr-2 md:mr-3 animate-pulse"></span>
+                            Future begins here.
+                        </button>
+                        
+                        <!-- Main Tagline -->
+                        <h1 id="hero-headline" class="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight">
+                            <span class="block">AGENTIC COPILOT</span>
+                            <span class="block">FOR YOUR</span>
+                            <span class="block text-brand-accent">ENTERPRISE</span>
+                        </h1>
+                        
+                        <!-- Subtitle -->
+                        <p id="hero-description" class="text-sm sm:text-base md:text-lg lg:text-xl text-gray-300 leading-relaxed max-w-xl font-light">
+                            The business apps you depend on, the support you deserve, and the AI you've been waiting for - all in one platform.
+                        </p>
+                        
+                        <!-- CTA Buttons -->
+                        <div class="pt-3 sm:pt-4 md:pt-8 flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 sm:gap-4">
+                            <a href="#contact" class="btn-primary inline-flex items-center justify-center text-center w-full sm:w-auto">
+                                <svg class="mr-2 w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M5 12h14" stroke-width="2" stroke-linecap="round"/>
+                                    <path d="M12 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Get Started
+                            </a>
+                            <a href="gallery.html" class="btn-ghost inline-flex items-center justify-center text-center w-full sm:w-auto">
+                                View Gallery
+                                <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="3" y="5" width="18" height="14" rx="2" ry="2" stroke-width="2"/>
+                                    <path d="M3 15l4-4 4 4 4-4 4 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="8" cy="9" r="1.5" fill="currentColor"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Right - 3D AI Energy Core Animation -->
+                    <div class="relative h-[350px] sm:h-[450px] md:h-[500px] lg:h-[600px] flex items-center justify-center hidden lg:block">
+                        <!-- AI Energy Core Container -->
+                        <div class="ai-core-container">
+                            <!-- Outer Rotating Rings -->
+                            <div class="energy-ring ring-1"></div>
+                            <div class="energy-ring ring-2"></div>
+                            <div class="energy-ring ring-3"></div>
+                            
+                            <!-- Central Tesseract Cube -->
+                            <div class="tesseract-cube">
+                                <!-- Inner Cube -->
+                                <div class="cube inner-cube">
+                                    <div class="cube-face front"></div>
+                                    <div class="cube-face back"></div>
+                                    <div class="cube-face left"></div>
+                                    <div class="cube-face right"></div>
+                                    <div class="cube-face top"></div>
+                                    <div class="cube-face bottom"></div>
+                                </div>
+                                <!-- Outer Cube -->
+                                <div class="cube outer-cube">
+                                    <div class="cube-face front"></div>
+                                    <div class="cube-face back"></div>
+                                    <div class="cube-face left"></div>
+                                    <div class="cube-face right"></div>
+                                    <div class="cube-face top"></div>
+                                    <div class="cube-face bottom"></div>
+                                </div>
+                    </div>
+                    
+                    <!-- Energy Particles -->
+                    <div class="energy-particles">
+                        <div class="particle particle-1"></div>
+                        <div class="particle particle-2"></div>
+                        <div class="particle particle-3"></div>
+                        <div class="particle particle-4"></div>
+                        <div class="particle particle-5"></div>
+                        <div class="particle particle-6"></div>
+                    </div>
+                    
+                    <!-- Mini Energy Cores floating around (Reduced to 4 for performance) -->
+                    <div class="mini-energy-core">
+                        <div class="mini-core-inner"></div>
+                        <div class="mini-core-ring"></div>
+                    </div>
+                    <div class="mini-energy-core">
+                        <div class="mini-core-inner"></div>
+                        <div class="mini-core-ring"></div>
+                    </div>
+                    <div class="mini-energy-core">
+                        <div class="mini-core-inner"></div>
+                        <div class="mini-core-ring"></div>
+                    </div>
+                    <div class="mini-energy-core">
+                        <div class="mini-core-inner"></div>
+                        <div class="mini-core-ring"></div>
+                    </div>
+                    
+                    <!-- Core Glow -->
+                    <div class="core-glow"></div>
+                </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- About Section -->
+    <section id="about" class="py-12 md:py-24 lg:py-32 relative text-white overflow-hidden" style="background-color: #0A0F1F;">
+        <!-- Vanta NET Background (Blue/White only) -->
+        <div id="vanta-rings-bg" class="absolute inset-0 z-0"></div>
+        
+        <div class="container mx-auto px-4 md:px-6 relative z-10">
+            <!-- Left side content - responsive width -->
+            <div class="max-w-full md:max-w-2xl lg:max-w-xl">
+                <div class="text-left mb-6 md:mb-12">
+                    <div class="flex items-center gap-2 md:gap-4 mb-4 md:mb-6">
+                        <h2 class="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight">
+                            <div class="flex flex-col">
+                                <span class="text-white">WHAT</span>
+                                <span class="text-white">
+                                    <span id="we-randomizer" class="text-sevorse-blue cursor-pointer hover:text-cyan-400 transition-colors duration-300 select-none" title="Click to randomize ring colors">WE</span> DO
+                                </span>
+                            </div>
+                        </h2>
+                        <div id="about-us-arrow" class="text-sevorse-blue hover:text-sevorse-light-blue transition-colors transform hover:translate-x-2 duration-300 cursor-pointer hidden sm:block">
+                            <svg class="w-10 h-10 md:w-12 md:h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-sm sm:text-base md:text-lg text-gray-300 leading-relaxed font-light mb-4 md:mb-8">
+                        SEVORSE is a digital innovation studio that exists at the intersection of cutting-edge technology and revolutionary design. We don't just build websites—we craft digital experiences that redefine what's possible.
+                    </p>
+                </div>
+                
+                <div class="space-y-3 md:space-y-6">
+                    <p class="text-sm sm:text-base md:text-lg text-gray-300 leading-relaxed">
+                        Our team of visionary designers, developers, and strategists work tirelessly to push the boundaries of digital innovation, creating solutions that don't just meet expectations—they obliterate them.
+                    </p>
+                    
+                    <!-- Stats - Left aligned, responsive -->
+                    <div class="grid grid-cols-3 gap-3 md:gap-6 pt-4 md:pt-8">
+                        <div class="text-left">
+                            <div class="text-3xl sm:text-4xl md:text-4xl font-display font-bold text-sevorse-blue counter mb-1" data-target="250">0</div>
+                            <div class="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider">Projects</div>
+                        </div>
+                        <div class="text-left">
+                            <div class="text-3xl sm:text-4xl md:text-4xl font-display font-bold text-sevorse-blue counter mb-1" data-target="100">0</div>
+                            <div class="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider">Clients</div>
+                        </div>
+                        <div class="text-left">
+                            <div class="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-sevorse-blue counter mb-1 md:mb-2" data-target="7">0</div>
+                            <div class="text-xs text-gray-400 uppercase tracking-wider">Years</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Services Section -->
+    <section id="services" class="py-12 md:py-24 lg:py-32 relative overflow-visible bg-[#0b1220] text-[#e5e7eb]">
+        <div class="container mx-auto px-4 md:px-6">
+            <!-- Two Equal Parts Layout - Mobile Responsive -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 lg:gap-16 items-start">
+                <!-- Left: Header, Text and Animation -->
+                <div class="space-y-6 md:space-y-12 io-reveal">
+                    <!-- Section Header -->
+                    <div class="text-left">
+                        <h2 class="text-4xl sm:text-5xl md:text-5xl lg:text-6xl mb-3 md:mb-6 font-bold text-white leading-tight tracking-tight">
+                            OUR SOLUTIONS
+                        </h2>
+                        <p class="text-sm sm:text-base md:text-lg text-gray-300 leading-relaxed max-w-2xl font-light">
+                            Comprehensive AI and AR solutions designed to <em class="text-white font-medium">revolutionize your business</em> operations and marketing strategies.
+                        </p>
+                    </div>
+                    
+                    <!-- Animation -->
+                    <div class="flex justify-start pt-4 md:pt-16 relative">
+                        <div id="solutions-animation" class="solutions-lottie-container w-full max-w-md lg:max-w-none">
+                            <dotlottie-wc 
+                                src="https://lottie.host/fec437cb-0991-4b2e-b1d7-e8810f7a8e2e/aVpTVUKJ9a.lottie" 
+                                style="width: 100%; max-width: 600px; height: auto; min-height: 300px; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" 
+                                autoplay 
+                                loop
+                                renderer="svg"
+                                background="transparent"
+                                speed="1"
+                                mode="normal">
+                            </dotlottie-wc>
+                        </div>
+                        <!-- Floating Orb reintroduced for motion accent -->
+                        <div class="floating-orb -top-8 -right-8 hidden md:block"></div>
+                    </div>
+                </div>
+                
+                <!-- Right: Services Bento Grid -->
+                <div class="bento-grid io-reveal">
+                <!-- AI Marketing Suite -->
+                <div class="service-card framer-card interactive-element will-change-transform group">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-sevorse-blue to-sevorse-dark-blue flex items-center justify-center text-2xl font-bold text-white mb-6 group-hover:scale-110 transition-transform duration-500">
+                        ✨
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">AI Marketing Suite</h3>
+                    <p class="text-gray-300 mb-6 leading-relaxed">
+                        Smart marketing automation, personalized campaigns, and data-driven insights to boost your reach.
+                    </p>
+                </div>
+                
+                <!-- AI Automation -->
+                <div class="service-card framer-card interactive-element will-change-transform group">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-sevorse-dark-blue to-sevorse-blue flex items-center justify-center text-2xl font-bold text-white mb-6 group-hover:scale-110 transition-transform duration-500">
+                        🤖
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">AI Automation</h3>
+                    <p class="text-gray-300 mb-6 leading-relaxed">
+                        Streamline workflows and enhance productivity with intelligent process automation.
+                    </p>
+                </div>
+                
+                <!-- Creative AI Design -->
+                <div class="service-card framer-card interactive-element will-change-transform group">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-sevorse-blue to-sevorse-charcoal flex items-center justify-center text-2xl font-bold text-white mb-6 group-hover:scale-110 transition-transform duration-500">
+                        🎨
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">Creative AI Design</h3>
+                    <p class="text-gray-300 mb-6 leading-relaxed">
+                        AI-powered design tools for marketing materials, branding, and visual content creation.
+                    </p>
+                </div>
+                
+                <!-- AR Experiences -->
+                <div class="service-card framer-card interactive-element will-change-transform group">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-sevorse-blue to-sevorse-light-blue flex items-center justify-center text-2xl font-bold text-white mb-6 group-hover:scale-110 transition-transform duration-500">
+                        📱
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">AR Experiences</h3>
+                    <p class="text-gray-300 mb-6 leading-relaxed">
+                        Immersive AR solutions for product visualization and interactive customer experiences.
+                    </p>
+                </div>
+                
+                <!-- Smart CMS -->
+                <div class="service-card framer-card interactive-element will-change-transform group">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-sevorse-charcoal to-sevorse-dark-blue flex items-center justify-center text-2xl font-bold text-white mb-6 group-hover:scale-110 transition-transform duration-500">
+                        🗂️
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">Smart CMS</h3>
+                    <p class="text-gray-300 mb-6 leading-relaxed">
+                        AI-enhanced content management system for seamless digital presence management.
+                    </p>
+                </div>
+                
+                <!-- Innovation Lab -->
+                <div class="service-card framer-card interactive-element will-change-transform group">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-sevorse-light-blue to-sevorse-blue flex items-center justify-center text-2xl font-bold text-white mb-6 group-hover:scale-110 transition-transform duration-500">
+                        💡
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4 text-white">Innovation Lab</h3>
+                    <p class="text-gray-300 mb-6 leading-relaxed">
+                        Custom AI & AR solutions tailored to your unique business challenges.
+                    </p>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="py-16 md:py-24 lg:py-32 relative bg-gray-900 text-white">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="text-left mb-12 md:mb-16 io-reveal">
+                <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 md:mb-6 font-bold text-white leading-tight tracking-tight">
+                    PORTFOLIO
+                </h2>
+                <p class="text-base md:text-lg text-gray-300 max-w-2xl leading-relaxed font-light">
+                    Showcasing the digital experiences that have transformed businesses across industries.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 io-reveal">
+                <!-- Portfolio items would go here -->
+                <div class="framer-card group cursor-pointer">
+                    <div class="aspect-video bg-gradient-to-br from-burgundy/20 to-gold/20 rounded-xl mb-6 flex items-center justify-center">
+                        <span class="text-6xl text-gold opacity-50">🚀</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-beige mb-2">AI-Powered E-commerce</h3>
+                    <p class="text-ashen">Next-generation shopping experience with intelligent recommendations</p>
+                </div>
+                
+                <div class="framer-card group cursor-pointer">
+                    <div class="aspect-video bg-gradient-to-br from-gold/20 to-burgundy/20 rounded-xl mb-6 flex items-center justify-center">
+                        <span class="text-6xl text-burgundy opacity-50">📊</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-beige mb-2">Data Analytics Platform</h3>
+                    <p class="text-ashen">Real-time business intelligence dashboard with predictive insights</p>
+                </div>
+                
+                <div class="framer-card group cursor-pointer">
+                    <div class="aspect-video bg-gradient-to-br from-logo-blue/20 to-gold/20 rounded-xl mb-6 flex items-center justify-center">
+                        <span class="text-6xl text-logo-blue opacity-50">🌐</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-beige mb-2">AR Product Showcase</h3>
+                    <p class="text-ashen">Immersive product visualization platform for luxury brands</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Products Section -->
+    <section id="products" class="py-32 relative bg-[#0b1220] text-[#e5e7eb]">
+        <div class="container mx-auto px-6">
+            <div class="text-left mb-16 io-reveal">
+                <h2 class="text-4xl md:text-5xl lg:text-6xl mb-6 font-bold text-white leading-tight tracking-tight">PRODUCTS</h2>
+                <p class="text-lg text-gray-300 max-w-2xl leading-relaxed font-light">Innovative products in development that will revolutionize how businesses interact with technology.</p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="framer-card p-10 md:p-16 flex flex-col items-center justify-center bg-white/5 border-white/10">
+                    <!-- Running Horse Lottie (replace src with your exact Lottie URL) -->
+                    <div class="products-lottie-container mb-6">
+                        <dotlottie-wc 
+                            id="products-horse"
+                            src="https://lottie.host/dfc49b1b-bba0-4ee9-8b53-8fbdd5d67f55/YlX1WMRNwJ.lottie" 
+                            style="width: 220px; height: 220px;"
+                            autoplay 
+                            loop 
+                            renderer="svg" 
+                            background="transparent">
+                        </dotlottie-wc>
+                    </div>
+                    <h3 class="text-3xl md:text-4xl font-bold text-white mt-8 mb-3">Coming Soon</h3>
+                    <p class="text-lg md:text-xl text-gray-300 text-center max-w-2xl">Innovative products in development that will revolutionize how businesses interact with technology.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-16 md:py-24 lg:py-32 relative bg-[#0b1220] text-[#e5e7eb]">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="text-left mb-12 md:mb-16">
+                <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 md:mb-6 font-bold text-white leading-tight tracking-tight">
+                    WHAT CLIENTS SAY
+                </h2>
+                <p class="text-base md:text-lg text-gray-300 max-w-2xl leading-relaxed font-light">
+                    Hear from businesses that have transformed their operations with our solutions.
+                </p>
+            </div>
+            
+            <!-- Marquee-style testimonials (looping horizontal scroll) -->
+            <div class="relative overflow-hidden io-reveal">
+                <div id="testimonials-track" class="flex gap-4 md:gap-6 whitespace-nowrap will-change-transform">
+                    <!-- Repeat a set to enable seamless loop -->
+                    <div class="framer-card inline-flex w-[300px] md:w-[380px] shrink-0 bg-white/5 border-white/10">
+                        <div class="w-full">
+                            <div class="flex items-center mb-6">
+                                <img class="w-12 h-12 rounded-full mr-4 object-cover" src="https://i.pravatar.cc/96?img=47" alt="Sarah Johnson headshot" loading="lazy" />
+                                <div>
+                                    <h4 class="font-bold text-white">Sarah Johnson</h4>
+                                    <p class="text-sm text-gray-300">CEO, TechCorp</p>
+                                </div>
+                            </div>
+                            <p class="text-white italic testimonial-quote">"SEVORSE transformed our digital presence completely. Their AI solutions increased our conversions by 300%."</p>
+                        </div>
+                    </div>
+                    <div class="framer-card inline-flex w-[380px] shrink-0 bg-white/5 border-white/10">
+                        <div class="w-full">
+                            <div class="flex items-center mb-6">
+                                <img class="w-12 h-12 rounded-full mr-4 object-cover" src="https://i.pravatar.cc/96?img=12" alt="Michael Chen headshot" loading="lazy" />
+                                <div>
+                                    <h4 class="font-bold text-white">Michael Chen</h4>
+                                    <p class="text-sm text-gray-300">Founder, InnovateLab</p>
+                                </div>
+                            </div>
+                            <p class="text-white italic testimonial-quote">"The AR experiences they created for our products were beyond our wildest expectations. Game-changing work."</p>
+                        </div>
+                    </div>
+                    <div class="framer-card inline-flex w-[380px] shrink-0 bg-white/5 border-white/10">
+                        <div class="w-full">
+                            <div class="flex items-center mb-6">
+                                <img class="w-12 h-12 rounded-full mr-4 object-cover" src="https://i.pravatar.cc/96?img=32" alt="Emily Rodriguez headshot" loading="lazy" />
+                                <div>
+                                    <h4 class="font-bold text-white">Emily Rodriguez</h4>
+                                    <p class="text-sm text-gray-300">Marketing Director, FutureFlow</p>
+                                </div>
+                            </div>
+                            <p class="text-white italic testimonial-quote">"Their marketing automation suite revolutionized how we engage with customers. ROI increased by 250%."</p>
+                        </div>
+                    </div>
+                    <!-- Duplicate set for seamless looping -->
+                    <div class="framer-card inline-flex w-[380px] shrink-0 bg-white/5 border-white/10">
+                        <div class="w-full">
+                            <div class="flex items-center mb-6">
+                                <img class="w-12 h-12 rounded-full mr-4 object-cover" src="https://i.pravatar.cc/96?img=47" alt="Sarah Johnson headshot" loading="lazy" />
+                                <div>
+                                    <h4 class="font-bold text-white">Sarah Johnson</h4>
+                                    <p class="text-sm text-gray-300">CEO, TechCorp</p>
+                                </div>
+                            </div>
+                            <p class="text-white italic testimonial-quote">"SEVORSE transformed our digital presence completely. Their AI solutions increased our conversions by 300%."</p>
+                        </div>
+                    </div>
+                    <div class="framer-card inline-flex w-[380px] shrink-0 bg-white/5 border-white/10">
+                        <div class="w-full">
+                            <div class="flex items-center mb-6">
+                                <img class="w-12 h-12 rounded-full mr-4 object-cover" src="https://i.pravatar.cc/96?img=12" alt="Michael Chen headshot" loading="lazy" />
+                                <div>
+                                    <h4 class="font-bold text-white">Michael Chen</h4>
+                                    <p class="text-sm text-gray-300">Founder, InnovateLab</p>
+                                </div>
+                            </div>
+                            <p class="text-white italic testimonial-quote">"The AR experiences they created for our products were beyond our wildest expectations. Game-changing work."</p>
+                        </div>
+                    </div>
+                    <div class="framer-card inline-flex w-[380px] shrink-0 bg-white/5 border-white/10">
+                        <div class="w-full">
+                            <div class="flex items-center mb-6">
+                                <img class="w-12 h-12 rounded-full mr-4 object-cover" src="https://i.pravatar.cc/96?img=32" alt="Emily Rodriguez headshot" loading="lazy" />
+                                <div>
+                                    <h4 class="font-bold text-white">Emily Rodriguez</h4>
+                                    <p class="text-sm text-gray-300">Marketing Director, FutureFlow</p>
+                                </div>
+                            </div>
+                            <p class="text-white italic testimonial-quote">"Their marketing automation suite revolutionized how we engage with customers. ROI increased by 250%."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Interactive CTA Section -->
+    <section class="relative overflow-hidden transition-all duration-1000 ease-out" id="cta-section">
+    <div class="grid grid-cols-1 md:grid-cols-2">
+            <!-- Book Consultation Card -->
+            <div class="interactive-card bg-sevorse-blue text-white p-12 md:p-16 lg:p-24 flex flex-col justify-center cursor-pointer transition-all duration-700 hover:bg-sevorse-light-blue min-h-[50vh] md:min-h-screen" data-bg="bg-sevorse-blue" id="book-card">
+                <div class="max-w-md">
+                    <h2 class="text-3xl md:text-5xl lg:text-7xl font-black font-display mb-4 md:mb-6 leading-tight">
+                        BOOK A<br>
+                        CONSULTATION
+                    </h2>
+                    <p class="text-sm md:text-lg mb-4 md:mb-8 opacity-80">
+                        Let's transform the way your business works. Book a consultation to see our solutions in action.
+                    </p>
+                    <div class="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-black/10 rounded-full">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- About Us Card -->
+            <div class="interactive-card bg-sevorse-charcoal text-white p-12 md:p-16 lg:p-24 flex flex-col justify-center cursor-pointer transition-all duration-700 hover:bg-gray-700 min-h-[50vh] md:min-h-screen" data-bg="bg-sevorse-charcoal" id="about-card">
+                <div class="max-w-md">
+                    <h2 class="text-3xl md:text-5xl lg:text-7xl font-black font-display mb-4 md:mb-6 leading-tight">
+                        ABOUT<br>
+                        US
+                    </h2>
+                    <p class="text-sm md:text-lg mb-4 md:mb-8 opacity-80">
+                        Learn more about our company's journey in redefining how great work gets done.
+                    </p>
+                    <div id="about-card-arrow" class="inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-black/10 rounded-full">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black text-white py-20">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-2 lg:grid-cols-5 gap-12">
+                <!-- Logo & Contact -->
+                <div class="lg:col-span-2">
+                    <div class="flex items-start mb-6">
+                        <img src="images/sevorse-logo-white.png" alt="SEVORSE" class="h-12 w-auto object-contain" loading="lazy">
+                    </div>
+                    
+                    <p class="text-gray-400 mb-6 max-w-sm">
+                        Have questions or want to chat?
+                    </p>
+                    <p class="text-gray-400 mb-2">
+                        Drop us a line → <span class="text-gold">contact@sevorse.com</span>
+                    </p>
+                    <p class="text-gray-400 mb-6">
+                        Phone: <span class="text-sevorse-blue">+91 9480150791</span>
+                    </p>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div>
+                    <h4 class="font-semibold mb-4 text-white">Quick Actions</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="about-progress.html" id="about-us-btn" class="hover:text-sevorse-blue transition-colors cursor-pointer">About Us</a></li>
+                        <li><button id="consultation-btn" class="hover:text-sevorse-blue transition-colors cursor-pointer">Book Consultation</button></li>
+                        <li><a href="#services" class="hover:text-sevorse-blue transition-colors">Our Services</a></li>
+                        <li><a href="#portfolio" class="hover:text-sevorse-blue transition-colors">Portfolio</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Services -->
+                <div>
+                    <h4 class="font-semibold mb-4 text-white">Services</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-sevorse-blue transition-colors">AI Solutions</a></li>
+                        <li><a href="#" class="hover:text-sevorse-blue transition-colors">Software Development</a></li>
+                        <li><a href="#" class="hover:text-sevorse-blue transition-colors">Digital Transformation</a></li>
+                        <li><a href="#" class="hover:text-sevorse-blue transition-colors">Automation</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Company -->
+                <div>
+                    <h4 class="font-semibold mb-4 text-white">Company</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-sevorse-blue transition-colors">Careers</a></li>
+                        <li><a href="#" class="hover:text-sevorse-blue transition-colors">Partnership</a></li>
+                        <li><a href="#" class="hover:text-sevorse-blue transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-sevorse-blue transition-colors">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Bottom Section -->
+            <div class="border-t border-gray-800 mt-12 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="flex items-center gap-6 mb-4 md:mb-0">
+                        <button class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors" aria-label="Back to top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                            </svg>
+                            Back to top
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-center gap-8">
+                        <p class="text-gray-400 text-sm">
+                            SEV-ORSE © 2024. All rights reserved
+                        </p>
+                        <div class="flex items-center gap-4">
+                            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                                </svg>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                </svg>
+                            </a>
+                            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.097.118.112.222.083.343-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.748-1.378 0 0-.599 2.282-.744 2.840-.282 1.084-1.064 2.456-1.549 3.235C9.584 23.815 10.77 24.001 12.017 24.001c6.624 0 11.99-5.367 11.99-12.014C24.007 5.367 18.641.001 12.017.001z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+        <!-- Full-screen Story Modal (vanilla, no GSAP) -->
+        <div id="story-modal" class="fixed inset-0 z-[99990] hidden" role="dialog" aria-modal="true" aria-labelledby="story-modal-title">
+            <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" id="story-overlay"></div>
+            <div class="relative inset-0 w-full h-full flex flex-col">
+                <!-- Header -->
+                <div class="flex items-center justify-between px-4 py-3 text-white">
+                    <h3 id="story-modal-title" class="text-lg font-semibold">About SEVORSE</h3>
+                    <button id="story-close" class="w-10 h-10 rounded-md flex items-center justify-center text-white/80 hover:text-white hover:bg-white/10" aria-label="Close story modal">&times;</button>
+                </div>
+                <!-- Scroller -->
+                <div id="story-scroller" class="relative flex-1 overflow-auto" style="overscroll-behavior: contain;">
+                    <section id="story-cards" class="relative" style="height: 300vh;">
+                        <div class="sc-sticky" style="position: sticky; top: 0; height: 100vh;">
+                            <div class="sc-stage" style="position: relative; width: 100%; height: 100%; display: grid; place-items: center; overflow: hidden;">
+                                <!-- Card 1 -->
+                                <div class="sc-card sc-card-1" style="position:absolute; inset:0; margin:auto; width:100%; height:100%; border-radius:0; background:#fff; border:none; box-shadow:none; display:flex; align-items:center; justify-content:center; overflow:hidden; transform-origin:center; z-index:3; opacity:1; transform:translateY(0) scale(1);">
+                                    <div class="sc-card-inner" style="padding:min(48px,6vw); width:100%; max-width:1200px; display:flex; align-items:center; justify-content:center;">
+                                        <img src="images/sevorse-title-with-slogan.png" alt="SEVORSE — You know the business, we know the tech" style="width:min(1200px,90vw); height:auto; display:block; object-fit:contain;"/>
+                                    </div>
+                                </div>
+                                <!-- Card 2 -->
+                                <div class="sc-card sc-card-2" style="position:absolute; inset:0; margin:auto; width:100%; height:100%; border-radius:0; background:#fff; border:none; box-shadow:none; display:flex; align-items:center; justify-content:center; overflow:hidden; transform-origin:center; z-index:2; opacity:0; transform:translateY(40px) scale(.98);">
+                                    <div class="sc-card-inner" style="padding:min(48px,6vw); width:100%; max-width:1200px;">
+                                        <h1 style="font-size:clamp(28px,3.2vw,56px); font-weight:800; line-height:1.1; margin-bottom: clamp(12px,1.2vw,16px); color:#0b1220;">We build systems that feel effortless.</h1>
+                                        <p style="font-size:clamp(16px,1.4vw,20px); line-height:1.7; color:#111827; opacity:.9; max-width: 60ch;">SEVORSE designs obvious-to-use apps and agentic copilots that help your teams move faster with less friction. We instrument everything for learning, and we ship value weekly.</p>
+                                        <div style="display:grid; grid-template-columns: 1fr; gap: clamp(12px,1.6vw,18px); margin-top: clamp(16px,2vw,24px);">
+                                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: clamp(12px,2vw,24px);">
+                                                <ul style="list-style:none; padding:0; margin:0; font-size:clamp(14px,1.2vw,18px); color:#0f172a;">
+                                                    <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Agentic copilots for ops, sales, support</li>
+                                                    <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Modern web + mobile apps tuned for speed</li>
+                                                    <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Automation pipelines that remove busywork</li>
+                                                </ul>
+                                                <ul style="list-style:none; padding:0; margin:0; font-size:clamp(14px,1.2vw,18px); color:#0f172a;">
+                                                    <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Observability from day one</li>
+                                                    <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Mobile-first clarity, resilient at scale</li>
+                                                    <li style="display:flex; align-items:center; gap:10px; margin:8px 0;">✅ Weekly momentum → long-term mastery</li>
+                                                </ul>
+                                            </div>
+                                            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top: clamp(12px,1.2vw,18px);">
+                                                <button id="story-open-consultation" style="background:#1976D2; color:#fff; border:none; padding:12px 18px; border-radius:10px; font-weight:600;">Book a consultation</button>
+                                                <a href="gallery.html" style="border:2px solid #0b1220; color:#0b1220; padding:10px 16px; border-radius:10px; font-weight:600;">View gallery</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card 3 (blank) -->
+                                <div class="sc-card sc-card-3" style="position:absolute; inset:0; margin:auto; width:100%; height:100%; border-radius:0; background:#fff; border:none; box-shadow:none; display:flex; align-items:center; justify-content:center; overflow:hidden; transform-origin:center; z-index:4; opacity:0; transform:translateY(60px) scale(1);"></div>
+                            </div>
+                        </div>
+                    </section>
+                    <div style="height: 20vh;"></div>
+                </div>
+            </div>
+        </div>
+    
+    <!-- About Us Modal -->
+    <div id="about-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="about-modal-title">
+        <div class="fixed inset-0 bg-black bg-opacity-75 transition-opacity"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-gray-900 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-8">
+                    <!-- Close Button -->
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 id="about-modal-title" class="text-4xl font-bold text-sevorse-blue">About Us</h2>
+                        <button id="close-about-modal" class="text-gray-400 hover:text-white text-2xl" aria-label="Close about modal">&times;</button>
+                    </div>
+                    
+                    <!-- About Content -->
+                    <div class="grid md:grid-cols-2 gap-8 text-white">
+                        <div>
+                            <div class="space-y-4 text-gray-300">
+                                <p>Sevorse is a technology services company providing software and AI solutions designed to enhance efficiency and accelerate growth.</p>
+                                <p>Sevorse provides the best services with a tailored approach, adapting to the unique needs of every client.</p>
+                                <div class="space-y-2 mt-6">
+                                    <div class="flex items-center">
+                                        <span class="text-sevorse-blue mr-2">✓</span>
+                                        <span>Software Development</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="text-sevorse-blue mr-2">✓</span>
+                                        <span>AI Solutions</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <span class="text-sevorse-blue mr-2">✓</span>
+                                        <span>Digital Transformation</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-2xl font-bold text-sevorse-blue mb-4">Why Choose Our Services</h3>
+                            <p class="font-semibold text-white mb-4">Our advantages are:</p>
+                            
+                            <div class="space-y-4">
+                                <div class="bg-gray-800 p-4 rounded-lg">
+                                    <p class="text-gray-300">Sevorse delivers innovative, reliable solutions tailored to client success.</p>
+                                </div>
+                                
+                                <div class="bg-gray-800 p-4 rounded-lg">
+                                    <p class="text-gray-300">Expertise, technology, and care drive services that create impact.</p>
+                                </div>
+                                
+                                <div class="bg-gray-800 p-4 rounded-lg">
+                                    <p class="text-gray-300">Choosing Sevorse means excellence, innovation, and commitment to growth.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Consultation Modal - Improved Professional Design -->
+    <div id="consultation-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="consultation-modal-title">
+        <div class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm transition-opacity"></div>
+        
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl max-w-xl w-full shadow-2xl transform transition-all my-4">
+                <!-- Header Section -->
+                <div class="bg-gradient-to-r from-sevorse-blue to-sevorse-dark-blue text-white p-6 rounded-t-2xl">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 id="consultation-modal-title" class="text-2xl font-bold mb-1">Book a Free Consultation</h2>
+                            <p class="text-blue-100 text-sm">Get a quick, tailored plan from our team</p>
+                        </div>
+                        <button id="close-consultation-modal" class="text-white/80 hover:text-white text-2xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors" aria-label="Close consultation modal">
+                            &times;
+                        </button>
+                    </div>
+                </div>
+                    
+                
+                <!-- Form Section -->
+                <div class="p-6">
+                    <!-- Consultation Form (essential only) -->
+                    <form id="consultation-form" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="client-name" class="block text-xs font-semibold text-gray-700 mb-2">Full Name *</label>
+                                <input type="text" id="client-name" name="name" required 
+                                       class="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-sevorse-blue focus:ring-2 focus:ring-sevorse-blue/20 transition-all" 
+                                       placeholder="John Doe">
+                            </div>
+                            <div>
+                                <label for="client-email" class="block text-xs font-semibold text-gray-700 mb-2">Email Address *</label>
+                                <input type="email" id="client-email" name="email" required 
+                                       class="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-sevorse-blue focus:ring-2 focus:ring-sevorse-blue/20 transition-all" 
+                                       placeholder="john@company.com">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="client-message" class="block text-xs font-semibold text-gray-700 mb-2">Project Brief</label>
+                            <textarea id="client-message" name="message" rows="3" 
+                                      class="w-full px-3 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-sevorse-blue focus:ring-2 focus:ring-sevorse-blue/20 transition-all resize-none" 
+                                      placeholder="What do you want to build or improve?"></textarea>
+                        </div>
+                        <div class="flex gap-3 pt-2">
+                            <button type="submit" 
+                                    class="flex-1 bg-gradient-to-r from-sevorse-blue to-sevorse-dark-blue text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all focus:outline-none focus:ring-4 focus:ring-sevorse-blue/30">
+                                Schedule Free Consultation
+                            </button>
+                            <button type="button" id="cancel-consultation" 
+                                    class="px-5 py-3 border-2 border-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                    
+                    
+                    <!-- Success Message -->
+                    <div id="consultation-success" class="hidden text-center py-6">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Consultation Booked!</h3>
+                        <p class="text-gray-600 mb-4 max-w-md mx-auto leading-relaxed">We'll contact you within 24 hours to schedule your free consultation.</p>
+                        <button id="close-success" class="bg-sevorse-blue text-white px-6 py-3 rounded-lg hover:bg-sevorse-dark-blue transition-colors font-semibold">
+                            Perfect, Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Floating Pricing Horse -->
+    <div id="pricing-robot" class="fixed bottom-6 right-6 z-40 cursor-pointer group">
+        <!-- Horse Container -->
+        <div class="relative w-18 h-18 bg-gradient-to-br from-sevorse-blue to-sevorse-dark-blue rounded-full flex items-center justify-center shadow-2xl hover:shadow-blue-500/40 transition-all duration-300 hover:scale-110 border-4 border-blue-200">
+            <!-- Glowing Energy Ball Icon -->
+            <svg class="w-10 h-10" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <!-- Outer glow effect -->
+                <defs>
+                    <radialGradient id="energyGlow" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+                        <stop offset="40%" style="stop-color:#60a5fa;stop-opacity:0.8" />
+                        <stop offset="70%" style="stop-color:#1e40af;stop-opacity:0.4" />
+                        <stop offset="100%" style="stop-color:#0a1929;stop-opacity:0" />
+                    </radialGradient>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                
+                <!-- Glowing outer circle -->
+                <circle cx="50" cy="50" r="35" fill="url(#energyGlow)" opacity="0.6" filter="url(#glow)">
+                    <animate attributeName="r" values="35;38;35" dur="2s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values="0.6;0.8;0.6" dur="2s" repeatCount="indefinite"/>
+                </circle>
+                
+                <!-- Core energy ball -->
+                <circle cx="50" cy="50" r="20" fill="#60a5fa" opacity="0.9"/>
+                <circle cx="50" cy="50" r="15" fill="#93c5fd" opacity="0.8"/>
+                <circle cx="50" cy="50" r="10" fill="#ffffff" opacity="1">
+                    <animate attributeName="opacity" values="1;0.7;1" dur="1.5s" repeatCount="indefinite"/>
+                </circle>
+                
+                <!-- Energy particles -->
+                <circle cx="30" cy="30" r="2" fill="#ffffff" opacity="0.8">
+                    <animate attributeName="cx" values="30;70;30" dur="3s" repeatCount="indefinite"/>
+                    <animate attributeName="cy" values="30;70;30" dur="3s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="70" cy="30" r="2" fill="#60a5fa" opacity="0.7">
+                    <animate attributeName="cx" values="70;30;70" dur="4s" repeatCount="indefinite"/>
+                    <animate attributeName="cy" values="30;70;30" dur="4s" repeatCount="indefinite"/>
+                </circle>
+            </svg>
+        </div>
+        
+        <!-- Tooltip -->
+        <div class="absolute -top-14 -left-8 bg-sevorse-blue text-white px-3 py-2 rounded-lg text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg">
+            <div class="relative">
+                View Pricing Plans
+                <!-- Tooltip Arrow -->
+                <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-sevorse-blue"></div>
+            </div>
+        </div>
+        
+        <!-- Floating Particles Effect -->
+        <div class="absolute inset-0 pointer-events-none">
+            <div class="absolute -top-1 right-2 w-1 h-1 bg-blue-300 rounded-full opacity-60 animate-ping"></div>
+            <div class="absolute top-2 -left-1 w-1 h-1 bg-blue-400 rounded-full opacity-40 animate-ping" style="animation-delay: 1s;"></div>
+            <div class="absolute -bottom-1 right-1 w-1 h-1 bg-blue-500 rounded-full opacity-50 animate-ping" style="animation-delay: 2s;"></div>
+        </div>
+    </div>
+
+    <!-- Pricing Modal - New Layout: Membership Top, Packages Below with Lock -->
+    <div id="pricing-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="pricing-modal-title">
+        <div class="absolute inset-0 bg-black"></div>
+        <div class="relative z-10 h-screen flex items-center justify-center text-white overflow-hidden p-2 md:p-4">
+            <!-- Animated background energy waves -->
+            <div class="pricing-bg">
+                <div class="wave-layer-1"></div>
+                <div class="wave-layer-2"></div>
+                <div class="wave-glow"></div>
+            </div>
+            
+            <!-- Pricing Wrapper - Contains Everything -->
+            <div class="pricing-wrap max-h-[95vh] overflow-y-auto">
+                <!-- Top bar -->
+                <div class="flex items-center justify-between flex-shrink-0 mb-3 md:mb-4">
+                    <div class="flex items-center gap-2 md:gap-4">
+                        <h2 id="pricing-modal-title" class="text-sm md:text-lg font-semibold text-gray-400 uppercase tracking-wider">Plans & Pricing</h2>
+                    </div>
+                    <button id="close-pricing-modal" class="w-8 h-8 md:w-10 md:h-10 grid place-items-center rounded-full bg-white/10 hover:bg-white/20 transition text-xl md:text-2xl" aria-label="Close pricing modal">&times;</button>
+                </div>
+
+                <!-- Membership Card (Top Center) -->
+                <div class="membership-card-wrapper mb-3 md:mb-4">
+                    <div class="membership-card text-sm md:text-base" data-plan="membership">
+                            <!-- Toggle Switch (Top Right of Card) -->
+                            <div class="membership-toggle">
+                                <label class="toggle-label">
+                                    <input type="checkbox" id="unlock-packages-toggle" class="toggle-input">
+                                    <span class="toggle-slider"></span>
+                                    <span class="toggle-text">Enable to Unlock</span>
+                                </label>
+                            </div>
+                            
+                            <!-- Left Column: Title & Price -->
+                            <div>
+                                
+                                <div class="pp-title">Sevorse Membership</div>
+                                <div class="pp-price">
+                                    <span class="currency">₹</span>
+                                    <span class="num">4,777</span>
+                                    <span class="per">/- Lifetime Access</span>
+                                </div>
+                                <button class="pp-cta">JOIN MEMBERSHIP</button>
+                            </div>
+                            
+                            <!-- Right Column: Features -->
+                            <div>
+                                <ul class="pp-feat">
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> On-Board Sevorse Tech Support</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Free Welcome Kit by Sevorse</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> OP Audit, Analysis & Growth Report</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Sevorse Community Access</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Access to Beta AI Tools</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Exclusive Member Events</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                <!-- Package Cards (Horizontal Row Below) -->
+                <div class="packages-row" id="packages-row">
+                    
+                    <!-- Core Package -->
+                    <div class="package-card blurred" data-plan="core">
+                            <div class="pp-card-inner">
+                                <div class="pp-title">Sevorse Core</div>
+                                <div class="pp-price">
+                                    <span class="currency">₹</span>
+                                    <span class="num">17,777</span>
+                                    <span class="per">/mo</span>
+                                </div>
+                                <ul class="pp-feat">
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Upto 7 Section AI Powered Website</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> AI Optimized SEO & GBP</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Meta Platforms Marketing</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Minimum 6 Post & 2 Reels</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Ads up to ₹ 1,000 included (Scalable)</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Upto 50GB Business Shoot ( Once )</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> 1 Professional Email ID</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Periodic Festival Posts</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Dedicated Tech Support</li>
+                                </ul>
+                                <button class="pp-cta">Choose Core</button>
+                            </div>
+                        </div>
+
+                        <!-- Prime Package -->
+                        <div class="package-card blurred" data-plan="prime">
+                            <div class="pp-card-inner">
+                                
+                                <div class="pp-title">Sevorse Prime</div>
+                                <div class="pp-subtle">Includes Everything in Core</div>
+                                <div class="pp-price">
+                                    <span class="currency">₹</span>
+                                    <span class="num">37,777</span>
+                                    <span class="per">/mo</span>
+                                </div>
+                                <ul class="pp-feat">
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Up to 5 Page AI Powered Website</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Minimum 14 Post & 4 Reels</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Ads up to ₹ 5,000 included (Scalable)</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Upto 100GB Business Shoot ( twice )</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Influencer Collaboration ( Once )</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Branding Material Designs</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Upto 10 Updates Posters</li>
+                                </ul>
+                                <button class="pp-cta">Choose Prime</button>
+                            </div>
+                        </div>
+
+                        <!-- Elite Package -->
+                        <div class="package-card blurred" data-plan="elite">
+                            <div class="pp-card-inner">
+                                
+                                <div class="pp-title">Sevorse Elite</div>
+                                <div class="pp-subtle">Includes Everything in Prime</div>
+                                <div class="pp-price">
+                                    <span class="currency">₹</span>
+                                    <span class="num">57,777</span>
+                                    <span class="per">/mo</span>
+                                </div>
+                                <ul class="pp-feat">
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Full Business AI Equipped Website</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Blog & Youtube Maintenance</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Minimum 22 Post & 8 Reels</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Ads up to ₹ 15,000 included (Scalable)</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Upto 300GB Business Shoot ( Thrice )</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Influencer Collaboration ( Twice )</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> AI Owner Dashboard</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Updates Posters</li>
+                                    <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> On-site Tech Assistance</li>
+                                </ul>
+                                <button class="pp-cta">Choose Elite</button>
+                            </div>
+                        </div>
+
+                </div> <!-- Close packages-row -->
+            </div> <!-- Close pricing-wrap -->
+        </div>
+    </div>
+    
+    <!-- About Us Modal -->
+    <div id="about-us-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="about-us-modal-title">
+        <div class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm transition-opacity"></div>
+        
+        <div class="fixed inset-0 flex items-center justify-center p-4 overflow-y-auto">
+            <div class="bg-black rounded-2xl max-w-md w-full shadow-2xl transform transition-all my-8 border border-white/10">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-gray-900 to-black text-white p-6 rounded-t-2xl border-b border-white/10">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center gap-3">
+                            <h2 id="about-us-modal-title" class="text-2xl font-bold">About Us</h2>
+                            <svg class="w-6 h-6 text-sevorse-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                            </svg>
+                        </div>
+                        <button id="close-about-us-modal" class="text-white/80 hover:text-white text-2xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors" aria-label="Close about us modal">
+                            &times;
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Content -->
+                <div class="p-8 bg-gray-900 text-white rounded-b-2xl">
+                    <p class="text-base leading-relaxed mb-6">
+                        Sevorse is a technology services company providing software and AI solutions designed to enhance efficiency and accelerate growth.
+                    </p>
+                    
+                    <p class="text-base leading-relaxed mb-8">
+                        Sevorse provides the best services with a tailored approach, adapting to the unique needs of every client.
+                    </p>
+                    
+                    <!-- Service List -->
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <div class="mt-1">
+                                <svg class="w-6 h-6 text-sevorse-blue flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-white mb-1">Software Development</h3>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3">
+                            <div class="mt-1">
+                                <svg class="w-6 h-6 text-sevorse-blue flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-white mb-1">AI Solutions</h3>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start gap-3">
+                            <div class="mt-1">
+                                <svg class="w-6 h-6 text-sevorse-blue flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-white mb-1">Digital Transformation</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    
+    <!-- Scripts -->
+    <script src="main.js?v=20251003-2"></script>
+    
+    <!-- DotLottie Web Component for Animations -->
+    <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.1/dist/dotlottie-wc.js" type="module"></script>
+    
+    <script src="gsap-animations.js"></script>
+        <script>
+                        // Pricing carousel - infinite loop, 3 visible + 1 back, center glow
+                        (function(){
+                            const wrap = document.getElementById('ppCarousel');
+                            const track = document.getElementById('ppTrack');
+                            if (!wrap || !track) return;
+                            const slides = Array.from(track.querySelectorAll('.pp-slide'));
+                            const cards = slides.map(s => s.querySelector('.pp-card'));
+                            const totalSlides = slides.length;
+                            if (totalSlides < 2) return;
+                            
+                            let currentIndex = 1; // Start with Elite (index 1) centered
+                            let isAnimating = false;
+                            let rafId = null;
+                            
+                            // Position slides to show 3 at once in frame - optimized with RAF
+                            function render() {
+                                if (rafId) return; // Prevent multiple RAF calls
+                                rafId = requestAnimationFrame(() => {
+                                    slides.forEach((slide, i) => {
+                                        // Calculate which position this card is in relative to center
+                                        let offset = (i - currentIndex + totalSlides) % totalSlides;
+                                        // Wrap: if offset > half, move to left side
+                                        if (offset > totalSlides / 2) offset -= totalSlides;
+                                        
+                                        const isCentered = offset === 0;
+                                        slide.classList.toggle('is-center', isCentered);
+                                        
+                                        // Show 3 cards: left (-1), center (0), right (+1)
+                                        // Hide the 4th card (offset = 2 or -2)
+                                        if (Math.abs(offset) <= 1) {
+                                            slide.classList.remove('is-hidden');
+                                        } else {
+                                            slide.classList.add('is-hidden');
+                                        }
+                                        
+                                        slide.style.order = offset + 10; // CSS order to position left-center-right
+                                        slide.style.zIndex = isCentered ? 10 : 5;
+                                    });
+                                    rafId = null;
+                                });
+                            }
+                            
+                            function go(direction) {
+                                if (isAnimating) return;
+                                isAnimating = true;
+                                currentIndex = (currentIndex + direction + totalSlides) % totalSlides;
+                                render();
+                                setTimeout(() => { isAnimating = false; }, 500);
+                            }
+                            
+                            function next() { go(1); }
+                            function prev() { go(-1); }
+                            
+                            // Optimized wheel navigation with throttling
+                            let wheelTimeout;
+                            let lastWheelTime = 0;
+                            function onWheel(e) {
+                                const modalOpen = !document.getElementById('pricing-modal')?.classList.contains('hidden');
+                                if (!modalOpen || isAnimating) return;
+                                
+                                const now = Date.now();
+                                if (now - lastWheelTime < 100) return; // Throttle to 100ms
+                                
+                                const absX = Math.abs(e.deltaX), absY = Math.abs(e.deltaY);
+                                if (absX > absY || e.shiftKey) {
+                                    e.preventDefault();
+                                    if (absX > 15 || absY > 15) {
+                                        lastWheelTime = now;
+                                        if (e.deltaX > 0 || (e.shiftKey && e.deltaY > 0)) next();
+                                        else prev();
+                                    }
+                                }
+                            }
+                            wrap.addEventListener('wheel', onWheel, { passive: false });
+                            
+                            // Touch/drag swipe
+                            let startX = 0, dragging = false;
+                            function onDown(e) {
+                                dragging = true;
+                                startX = e.touches ? e.touches[0].clientX : e.clientX;
+                            }
+                            function onUp(e) {
+                                if (!dragging) return;
+                                dragging = false;
+                                const endX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+                                const dx = endX - startX;
+                                if (Math.abs(dx) > 60) {
+                                    if (dx < 0) next();
+                                    else prev();
+                                }
+                            }
+                            wrap.addEventListener('mousedown', onDown);
+                            wrap.addEventListener('touchstart', onDown, { passive: true });
+                            wrap.addEventListener('mouseup', onUp);
+                            wrap.addEventListener('touchend', onUp);
+                            
+                            // Arrow keys
+                            const modalEl = document.getElementById('pricing-modal');
+                            window.addEventListener('keydown', (e) => {
+                                if (!modalEl || modalEl.classList.contains('hidden')) return;
+                                if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+                                if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+                            });
+                            
+                            // Tilt + wobble on card inner
+                            function attachTilt(card) {
+                                const inner = card.querySelector('.pp-card-inner');
+                                if (!inner) return;
+                                const MAX = 6;
+                                let pressed = false;
+                                function tilt(x, y) {
+                                    const r = inner.getBoundingClientRect();
+                                    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+                                    const dx = Math.max(-1, Math.min(1, (x - cx) / (r.width / 2)));
+                                    const dy = Math.max(-1, Math.min(1, (y - cy) / (r.height / 2)));
+                                    const rx = (-dy) * MAX, ry = (dx) * MAX;
+                                    inner.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+                                }
+                                function reset() { inner.style.transform = ''; }
+                                inner.addEventListener('pointerdown', e => { pressed = true; inner.classList.add('is-pressed'); tilt(e.clientX, e.clientY); });
+                                inner.addEventListener('pointermove', e => { if (pressed) tilt(e.clientX, e.clientY); });
+                                const end = () => {
+                                    if (!pressed) return;
+                                    pressed = false;
+                                    inner.classList.remove('is-pressed');
+                                    inner.classList.add('do-wobble');
+                                    reset();
+                                    setTimeout(() => inner.classList.remove('do-wobble'), 420);
+                                };
+                                inner.addEventListener('pointerup', end);
+                                inner.addEventListener('pointercancel', end);
+                                inner.addEventListener('mouseleave', end);
+                            }
+                            cards.forEach(c => attachTilt(c));
+                            
+                            // Init
+                            render();
+                        })();
+        
+        // Solutions cards tilt + wobble on touch
+        (function(){
+            const serviceCards = document.querySelectorAll('.service-card.interactive-element');
+            serviceCards.forEach(card => {
+                const MAX_TILT = 6;
+                let pressed = false;
+                function setTilt(x, y) {
+                    const rect = card.getBoundingClientRect();
+                    const cx = rect.left + rect.width / 2;
+                    const cy = rect.top + rect.height / 2;
+                    const dx = Math.max(-1, Math.min(1, (x - cx) / (rect.width / 2)));
+                    const dy = Math.max(-1, Math.min(1, (y - cy) / (rect.height / 2)));
+                    const rx = (-dy) * MAX_TILT;
+                    const ry = (dx) * MAX_TILT;
+                    card.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+                }
+                function resetTilt() {
+                    card.style.transform = '';
+                }
+                card.addEventListener('pointerdown', (e) => {
+                    pressed = true;
+                    card.classList.add('is-pressed');
+                    setTilt(e.clientX, e.clientY);
+                });
+                card.addEventListener('pointermove', (e) => {
+                    if (pressed) setTilt(e.clientX, e.clientY);
+                });
+                const end = () => {
+                    if (!pressed) return;
+                    pressed = false;
+                    card.classList.remove('is-pressed');
+                    card.classList.add('do-wobble');
+                    resetTilt();
+                    setTimeout(() => card.classList.remove('do-wobble'), 500);
+                };
+                card.addEventListener('pointerup', end);
+                card.addEventListener('pointercancel', end);
+                card.addEventListener('mouseleave', () => {
+                    if (!pressed) return;
+                    pressed = false;
+                    card.classList.remove('is-pressed');
+                    card.classList.add('do-wobble');
+                    resetTilt();
+                    setTimeout(() => card.classList.remove('do-wobble'), 500);
+                });
+            });
+        })();
+        
+        // ==============================================
+        // 🎨 Vanta.js CELLS Animation - REMOVED
+        // ==============================================
+        // Note: Hero section now uses pure CSS 3D AI Energy Core animation
+        // Vanta CELLS has been replaced for better performance
+        // See the .ai-core-container in hero section for the new animation
+        
+        </script>
+    
+    <!-- Story modal + Testimonials (no legacy About Zoom) -->
+    <script>
+    (function(){
+        // STORY MODAL (vanilla sticky + rAF animation)
+        const storyModal = document.getElementById('story-modal');
+        const storyOverlay = document.getElementById('story-overlay');
+        const storyClose = document.getElementById('story-close');
+        const storyScroller = document.getElementById('story-scroller');
+        const storyCards = document.getElementById('story-cards');
+        const openStoryBtns = [
+            document.getElementById('open-story-btn'),
+            document.getElementById('about-us-arrow'),
+            document.getElementById('about-card-arrow')
+        ].filter(Boolean);
+        const storyConsultBtn = document.getElementById('story-open-consultation');
+
+        function openStory(){
+            if (!storyModal) return;
+            storyModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            if (storyScroller) storyScroller.scrollTop = 0;
+            requestAnimationFrame(updateStoryScroll);
+        }
+        function closeStory(){
+            if (!storyModal) return;
+            storyModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+        openStoryBtns.forEach(btn=>btn.addEventListener('click', openStory));
+        if (storyOverlay) storyOverlay.addEventListener('click', closeStory);
+        if (storyClose) storyClose.addEventListener('click', closeStory);
+        document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && storyModal && !storyModal.classList.contains('hidden')) closeStory(); });
+
+        // Open existing Consultation modal from inside the story
+        if (storyConsultBtn) {
+            storyConsultBtn.addEventListener('click', () => {
+                const cm = document.getElementById('consultation-modal');
+                if (cm) {
+                    cm.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                }
+                // Close story to avoid layered modals
+                closeStory();
+            });
+        }
+
+        // rAF scroll animator inside the modal
+        let tickingSM = false;
+        function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+        function norm(v, a, b){ return clamp((v - a) / (b - a), 0, 1); }
+        function updateStoryScroll(){
+            if (!storyCards || !storyScroller) { tickingSM = false; return; }
+            const vh = storyScroller.clientHeight || 1;
+            const total = storyCards.offsetHeight - vh; // 300vh - 100vh
+            const scrolled = clamp(storyScroller.scrollTop, 0, total);
+            const p = total > 0 ? scrolled / total : 0;
+
+            const p1 = norm(p, 0.0, 0.33);
+            const p2 = norm(p, 0.33, 0.66);
+            const p3 = norm(p, 0.66, 1.0);
+
+            const c1 = storyCards.querySelector('.sc-card-1');
+            const c2 = storyCards.querySelector('.sc-card-2');
+            const c3 = storyCards.querySelector('.sc-card-3');
+            if (c1 && c2 && c3){
+                const c1Scale = 1 - 0.4 * p1;
+                const c1Opacity = 1 - p1;
+                c1.style.transform = `translateY(0px) scale(${c1Scale.toFixed(3)})`;
+                c1.style.opacity = c1Opacity.toFixed(3);
+
+                const c2Y = 40 * (1 - p2);
+                c2.style.transform = `translateY(${c2Y.toFixed(1)}px) scale(${(0.98 + 0.02 * p2).toFixed(3)})`;
+                c2.style.opacity = p2.toFixed(3);
+
+                const c3Y = 60 * (1 - p3);
+                c3.style.transform = `translateY(${c3Y.toFixed(1)}px) scale(1)`;
+                c3.style.opacity = p3.toFixed(3);
+            }
+            tickingSM = false;
+        }
+        function onStoryScroll(){ if (!tickingSM){ tickingSM = true; requestAnimationFrame(updateStoryScroll); } }
+        if (storyScroller) storyScroller.addEventListener('scroll', onStoryScroll, { passive: true });
+        window.addEventListener('resize', updateStoryScroll);
+    })();
+
+    // Testimonials marquee animation (kept)
+    document.addEventListener('DOMContentLoaded', function(){
+        if (typeof gsap === 'undefined') return;
+        const track = document.getElementById('testimonials-track');
+        if (!track) return;
+        requestAnimationFrame(() => {
+            const totalWidth = track.scrollWidth / 2;
+            gsap.to(track, {
+                x: -totalWidth,
+                duration: 18,
+                ease: 'none',
+                repeat: -1,
+                modifiers: {
+                    x: gsap.utils.unitize(x => (parseFloat(x) % -totalWidth))
+                }
+            });
+        });
+    });
+    
+    // DISABLED Card Stacking - Use normal scroll instead to prevent overlap
+    function initCardStacking() {
+        console.log('✅ Card stacking disabled - using normal scroll for better UX');
+        
+        // Just ensure sections have proper z-index for normal scroll
+        const sections = document.querySelectorAll('.stack-card');
+        sections.forEach((section, index) => {
+            const stackOrder = parseInt(section.dataset.stackOrder) || index;
+            gsap.set(section, { 
+                zIndex: 1,
+                position: 'relative'
+            });
+        });
+    }
+    
+    // Initialize only when ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(initCardStacking, 200);
+        });
+    } else {
+        setTimeout(initCardStacking, 200);
+    }
+    </script>
+    
+    <!-- Full-screen Sevorse Logo Flash Overlay -->
+    <div id="sevorse-flash-overlay" class="fixed inset-0 z-[99998] hidden items-center justify-center bg-black/90">
+    <img src="images/sevorse-logo-white.png" alt="SEVORSE" class="w-40 h-auto opacity-0" id="sevorse-flash-logo" loading="lazy" />
+    </div>
+
+    <!-- Removed legacy About Zoom modal -->
+    
+</body>
+</html>
