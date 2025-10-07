@@ -622,20 +622,53 @@ body.custom-cursor-active *:hover {
 
 /* Mobile Performance Optimizations */
 @media (max-width: 768px) {
-  /* Fullscreen mobile nav when active */
-  .nav-menu.active {
-    display: flex !important;
-    z-index: 999 !important;
-    position: fixed !important;
-    top: 0; left: 0; width: 100%; height: 100vh;
-    background: rgba(10,10,30,0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    flex-direction: column;
-    padding: 4rem 1rem 2rem;
+  /* Mobile menu overlay - positioned BELOW navbar, not fullscreen */
+  #mobile-menu {
+    display: none !important;
   }
-  .nav-menu.active .mobile-nav-item { font-size: 1.125rem; }
-  .nav-menu.active .mobile-nav-item + .mobile-nav-item { border-top: 1px solid rgba(255,255,255,0.06); }
+  
+  #mobile-menu.active {
+    display: flex !important;
+    position: fixed !important;
+    top: 80px !important; /* Start below navbar */
+    left: 0 !important;
+    width: 100vw !important;
+    height: calc(100vh - 80px) !important; /* Fill remaining space */
+    background: rgba(0, 0, 0, 0.97) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    z-index: 999999 !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding: 2rem 1rem !important;
+    animation: slideDown 0.3s ease-out !important;
+    overflow-y: auto !important;
+  }
+  
+  @keyframes slideDown {
+    from { 
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  #mobile-menu.active .mobile-nav-item { 
+    font-size: 1.125rem !important;
+    width: 100% !important;
+    text-align: center !important;
+  }
+  
+  /* Ensure navbar stays visible above menu */
+  nav,
+  header,
+  .fixed {
+    z-index: 9999999 !important; /* Higher than menu overlay */
+  }
 
   /* Fix viewport height on mobile browsers */
   html {
@@ -654,25 +687,31 @@ body.custom-cursor-active *:hover {
     padding-bottom: 3rem !important;
   }
   
-  /* Hero section mobile fix - ensure content is visible with better spacing */
+  /* Hero section mobile fix - tighter spacing to reduce empty gaps */
   #home {
     min-height: 100vh;
     min-height: -webkit-fill-available;
     display: flex;
     align-items: center;
-    padding-top: 5rem !important;
-    padding-bottom: 3rem !important;
+    padding-top: 6rem !important; /* Move content up closer to navbar */
+    padding-bottom: 2rem !important;
   }
   
   #home .grid {
     width: 100%;
-    gap: 2rem !important;
+    gap: 1rem !important; /* Reduced from 2rem */
+  }
+  
+  /* Reduce gaps - tighter spacing */
+  #home .space-y-3,
+  #home .space-y-4 {
+    gap: 0.75rem !important;
   }
   
   /* Reduce space above badge */
   #future-badge {
     margin-top: 0 !important;
-    margin-bottom: 1rem !important;
+    margin-bottom: 0.5rem !important; /* Reduced from 1rem */
   }
   
   /* Ensure hero text is always visible and compact */
@@ -680,9 +719,9 @@ body.custom-cursor-active *:hover {
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
-    font-size: 2.5rem !important;
+    font-size: 2.25rem !important; /* Slightly smaller */
     line-height: 1.1 !important;
-    margin-bottom: 1rem !important;
+    margin-bottom: 0.75rem !important; /* Reduced from 1rem */
     margin-top: 0 !important;
   }
   
@@ -690,13 +729,13 @@ body.custom-cursor-active *:hover {
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
-    font-size: 0.95rem !important;
-    line-height: 1.5 !important;
-    margin-bottom: 1.5rem !important;
-    max-width: 36rem !important; /* prevent congested lines */
+    font-size: 0.9rem !important;
+    line-height: 1.45 !important;
+    margin-bottom: 1rem !important; /* Reduced from 1.5rem */
+    max-width: 36rem !important;
     word-break: normal !important;
     overflow-wrap: normal !important;
-    hyphens: none !important; /* avoid "sup-port" breaks */
+    hyphens: none !important;
   }
 
   /* Avoid hyphenation/odd breaks for hero title */
@@ -704,19 +743,23 @@ body.custom-cursor-active *:hover {
     word-break: keep-all !important;
     overflow-wrap: normal !important;
     hyphens: none !important;
-    margin-bottom: 1.5rem !important;
+    margin-bottom: 0.75rem !important; /* Reduced from 1.5rem */
   }
   
-  /* Add breathing room to buttons */
+  /* Make buttons smaller and more compact on mobile */
   #home .btn-primary,
   #home .btn-ghost {
-    margin-top: 0.5rem !important;
-  }
-  
-  /* Compact button spacing */
-  #home .btn-primary,
-  #home .btn-ghost {
+    padding: 0.625rem 1.25rem !important; /* Smaller padding */
+    font-size: 0.875rem !important; /* Smaller text */
+    margin-top: 0 !important;
     margin-bottom: 0 !important;
+  }
+  
+  /* Reduce button gap container */
+  #home .pt-3,
+  #home .pt-4,
+  #home .pt-8 {
+    padding-top: 0.75rem !important; /* Minimal gap before buttons */
   }
   
   /* AI Energy Core - make smaller on mobile as requested */
