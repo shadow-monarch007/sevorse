@@ -410,6 +410,14 @@ function initMobileMenu() {
             e.stopPropagation();
             const isOpening = mobileMenu.classList.contains('hidden');
             mobileMenu.classList.toggle('hidden');
+            // On mobile, switch to fullscreen overlay class
+            if (window.innerWidth < 768) {
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('active');
+                } else {
+                    mobileMenu.classList.remove('active');
+                }
+            }
             toggleBodyScroll(isOpening);
             
             // Animate hamburger icon to X
@@ -425,6 +433,7 @@ function initMobileMenu() {
         mobileNavItems.forEach(item => {
             item.addEventListener('click', function() {
                 mobileMenu.classList.add('hidden');
+                mobileMenu.classList.remove('active');
                 toggleBodyScroll(false);
                 const svg = mobileMenuBtn.querySelector('svg');
                 svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
@@ -435,6 +444,7 @@ function initMobileMenu() {
         document.addEventListener('click', function(e) {
             if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
                 mobileMenu.classList.add('hidden');
+                mobileMenu.classList.remove('active');
                 toggleBodyScroll(false);
                 const svg = mobileMenuBtn.querySelector('svg');
                 svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
@@ -445,6 +455,7 @@ function initMobileMenu() {
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && !mobileMenu.classList.contains('hidden')) {
                 mobileMenu.classList.add('hidden');
+                mobileMenu.classList.remove('active');
                 toggleBodyScroll(false);
                 const svg = mobileMenuBtn.querySelector('svg');
                 svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
@@ -681,7 +692,7 @@ function initPerformanceOptimizations() {
             requestAnimationFrame(updateOnScroll);
             ticking = true;
         }
-    });
+    }, { passive: true });
     
     // Preload critical resources
     const preloadLinks = [
@@ -819,11 +830,13 @@ function initInteractiveCTASection() {
     };
     
     bookCard.addEventListener('mouseenter', () => {
+        if (window.innerWidth < 768) return; // simplify on mobile
         clearTimeout(transitionTimer);
         setBg('blue', 'relative overflow-hidden transition-all duration-1000 ease-out bg-blue-400 min-h-screen');
     });
     
     aboutCard.addEventListener('mouseenter', () => {
+        if (window.innerWidth < 768) return; // simplify on mobile
         clearTimeout(transitionTimer);
         setBg('charcoal', 'relative overflow-hidden transition-all duration-1000 ease-out bg-gray-600 min-h-screen');
     });
@@ -869,6 +882,22 @@ window.addEventListener('resize', debounce(function() {
     // Handle responsive adjustments
     if (typeof ScrollTrigger !== 'undefined') {
         ScrollTrigger.refresh();
+    }
+    // Resize Lottie canvases/containers if present
+    try {
+        const lotties = document.querySelectorAll('dotlottie-wc');
+        lotties.forEach(el => {
+            // Force reflow by toggling width; ensures proper resize in some browsers
+            const prev = el.style.width;
+            el.style.width = '99.9%';
+            requestAnimationFrame(() => { el.style.width = prev || '100%'; });
+        });
+    } catch(_) {}
+    // Reduce animation intensity on narrow screens
+    if (window.innerWidth < 768) {
+        document.body.classList.add('mobile-perf-mode');
+    } else {
+        document.body.classList.remove('mobile-perf-mode');
     }
 }, 250));
 
@@ -1068,11 +1097,17 @@ function initVantaRings() {
                 scaleMobile: 1.00,
                 backgroundColor: 0x0A0F1F, // Dark blue-black background
                 color: colorHex, // Network color (cycles through blues)
-                points: isMobile ? 8.00 : 12.00,
-                maxDistance: isMobile ? 18.00 : 22.00,
-                spacing: isMobile ? 16.00 : 15.00,
+                points: isMobile ? 6.00 : 12.00,
+                maxDistance: isMobile ? 14.00 : 22.00,
+                spacing: isMobile ? 18.00 : 15.00,
                 showDots: true
             });
+            // Attach safe resize handler
+            window.addEventListener('resize', debounce(() => {
+                try {
+                    if (vantaEffect && typeof vantaEffect.resize === 'function') vantaEffect.resize();
+                } catch(_) {}
+            }, 200));
         } else {
             setTimeout(() => createVantaEffect(colorHex), 100);
         }
@@ -1132,3 +1167,17 @@ if (document.readyState === 'loading') {
 } else {
     setTimeout(initVantaRings, 500); // Already loaded, wait 500ms
 }
+
+// Lightweight mobile animation guard
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.innerWidth < 768) {
+        document.body.classList.add('mobile-perf-mode');
+        // Slow down any dotlottie instances slightly
+        try {
+            const lotties = document.querySelectorAll('dotlottie-wc');
+            lotties.forEach(el => {
+                if (el.setSpeed) el.setSpeed(0.85);
+            });
+        } catch(_) {}
+    }
+});

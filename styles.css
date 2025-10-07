@@ -620,6 +620,21 @@ body.custom-cursor-active *:hover {
 
 /* Mobile Performance Optimizations */
 @media (max-width: 768px) {
+  /* Fullscreen mobile nav when active */
+  .nav-menu.active {
+    display: flex !important;
+    z-index: 999 !important;
+    position: fixed !important;
+    top: 0; left: 0; width: 100%; height: 100vh;
+    background: rgba(10,10,30,0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    flex-direction: column;
+    padding: 4rem 1rem 2rem;
+  }
+  .nav-menu.active .mobile-nav-item { font-size: 1.125rem; }
+  .nav-menu.active .mobile-nav-item + .mobile-nav-item { border-top: 1px solid rgba(255,255,255,0.06); }
+
   /* Fix viewport height on mobile browsers */
   html {
     height: -webkit-fill-available;
@@ -686,6 +701,14 @@ body.custom-cursor-active *:hover {
   /* AI Energy Core - hide on mobile to prioritize content */
   .ai-core-container {
     display: none !important;
+  }
+
+  /* Mobile hero animation container sizing */
+  .hero-animation-container {
+    width: 100% !important;
+    height: 40vh !important;
+    max-height: 420px !important;
+    min-height: 240px !important;
   }
   
   /* CTA Sections - Compact Card Layout - NO GAPS */
@@ -910,6 +933,17 @@ body.custom-cursor-active *:hover {
     flex-direction: column !important;
     gap: 0.5rem !important;
     width: 100% !important;
+  }
+  /* Pricing cards responsive width */
+  .package-card, .pricing-card {
+    width: 90% !important;
+    max-width: 400px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    background: rgba(10, 15, 30, 0.55) !important;
+    border: 1px solid rgba(96,165,250,0.25) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
   }
   
   .blur-toggle-btn {
@@ -1143,17 +1177,17 @@ body.custom-cursor-active *:hover {
   box-shadow: 0 35px 60px rgba(0, 0, 0, 0.15);
 }
 
-/* Pricing Card Enhancements */
-.pricing-card {
+/* Pricing Card Enhancements (scoped to pricing modal) */
+#pricing-modal .pricing-card {
   position: relative;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(10, 15, 30, 0.55);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(96,165,250,0.25);
   transition: all 0.4s ease;
   overflow: hidden;
 }
 
-.pricing-card::before {
+#pricing-modal .pricing-card::before {
   content: '';
   position: absolute;
   top: 0;
@@ -1164,14 +1198,14 @@ body.custom-cursor-active *:hover {
   transition: left 0.6s ease;
 }
 
-.pricing-card:hover::before {
+#pricing-modal .pricing-card:hover::before {
   left: 100%;
 }
 
-.pricing-card:hover {
+#pricing-modal .pricing-card:hover {
   transform: translateY(-10px) rotate(1deg);
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
-  border-color: var(--primary-400);
+  border-color: rgba(96,165,250,0.45);
 }
 
 /* Popular Badge */
