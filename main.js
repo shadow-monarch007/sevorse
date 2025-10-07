@@ -430,6 +430,7 @@ function initMobileMenu() {
                 document.body.style.width = '';
             }
         };
+        let openedAt = 0;
         
         // Toggle menu on button click
         mobileMenuBtn.addEventListener('click', function(e) {
@@ -439,6 +440,7 @@ function initMobileMenu() {
             if (isOpening) {
                 mobileMenu.classList.remove('hidden');
                 mobileMenu.classList.add('active');
+                openedAt = Date.now();
             } else {
                 mobileMenu.classList.add('hidden');
                 mobileMenu.classList.remove('active');
@@ -467,6 +469,8 @@ function initMobileMenu() {
         
         // Close menu when clicking outside
         document.addEventListener('click', function(e) {
+            // Give a short grace period after opening so the same tap doesn't immediately close it
+            if (Date.now() - openedAt < 200) return;
             if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
                 mobileMenu.classList.add('hidden');
                 mobileMenu.classList.remove('active');
