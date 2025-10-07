@@ -383,6 +383,15 @@ function initPackageToggle() {
             }
         });
     });
+
+    // On small screens, force unblur for readability
+    const forceMobileReadable = () => {
+        if (window.innerWidth < 768) {
+            packageCards.forEach(card => card.classList.remove('blurred'));
+        }
+    };
+    forceMobileReadable();
+    window.addEventListener('resize', forceMobileReadable, { passive: true });
 }
 
 // Mobile Menu Toggle
@@ -409,14 +418,13 @@ function initMobileMenu() {
         mobileMenuBtn.addEventListener('click', function(e) {
             e.stopPropagation();
             const isOpening = mobileMenu.classList.contains('hidden');
-            mobileMenu.classList.toggle('hidden');
-            // On mobile, switch to fullscreen overlay class
-            if (window.innerWidth < 768) {
-                if (!mobileMenu.classList.contains('hidden')) {
-                    mobileMenu.classList.add('active');
-                } else {
-                    mobileMenu.classList.remove('active');
-                }
+            // Use overlay behavior on mobile: fixed, inset-0
+            if (isOpening) {
+                mobileMenu.classList.remove('hidden');
+                mobileMenu.classList.add('active');
+            } else {
+                mobileMenu.classList.add('hidden');
+                mobileMenu.classList.remove('active');
             }
             toggleBodyScroll(isOpening);
             

@@ -698,10 +698,14 @@ body.custom-cursor-active *:hover {
     margin-bottom: 0 !important;
   }
   
-  /* AI Energy Core - hide on mobile to prioritize content */
+  /* AI Energy Core - SHOW on mobile per request (cubic energy core) */
   .ai-core-container {
-    display: none !important;
+    display: flex !important;
   }
+  .tesseract-cube { transform: scale(0.85); }
+  .ring-1 { width: 280px; height: 280px; }
+  .ring-2 { width: 220px; height: 220px; }
+  .ring-3 { width: 320px; height: 320px; }
 
   /* Mobile hero animation container sizing */
   .hero-animation-container {
@@ -936,8 +940,8 @@ body.custom-cursor-active *:hover {
   }
   /* Pricing cards responsive width */
   .package-card, .pricing-card {
-    width: 90% !important;
-    max-width: 400px !important;
+    width: 94% !important;
+    max-width: 460px !important;
     margin-left: auto !important;
     margin-right: auto !important;
     background: rgba(10, 15, 30, 0.55) !important;
@@ -945,6 +949,10 @@ body.custom-cursor-active *:hover {
     backdrop-filter: blur(16px) !important;
     -webkit-backdrop-filter: blur(16px) !important;
   }
+  /* Ensure packages are never blurred on mobile for readability */
+  .package-card.blurred { filter: none !important; opacity: 1 !important; pointer-events: auto !important; transform: none !important; }
+  #unlock-packages-toggle { display: none !important; }
+  .toggle-label .toggle-text { display: none !important; }
   
   .blur-toggle-btn {
     font-size: 0.6rem !important;
@@ -968,8 +976,8 @@ body.custom-cursor-active *:hover {
   }
   
   #mobile-menu {
-    animation: slideDown 0.3s ease-out;
-    max-height: 70vh;
+    animation: slideDown 0.22s ease-out;
+    max-height: 100vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
@@ -985,9 +993,9 @@ body.custom-cursor-active *:hover {
     }
   }
   
-  .mobile-nav-item {
-    font-size: 16px;
-  }
+  .mobile-nav-item { font-size: 18px; }
+  /* Prevent header area from blurring content beneath when menu opens */
+  #home > .absolute.top-0 { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
   
   /* Service cards - full width on mobile */
   .bento-grid {

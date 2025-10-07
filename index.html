@@ -1436,7 +1436,7 @@
             </div>
             
             <!-- Mobile Menu Fullscreen Overlay -->
-            <div id="mobile-menu" class="nav-menu hidden md:hidden absolute top-full left-0 right-0 mt-2 mx-4 bg-gray-900/95 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden shadow-2xl">
+            <div id="mobile-menu" class="nav-menu hidden md:hidden fixed inset-0 z-[1000] bg-black/90 backdrop-blur-md overflow-y-auto">
                 <div class="flex flex-col py-2">
                     <a href="#services" class="mobile-nav-item px-6 py-4 text-white font-medium hover:bg-white/10 transition-colors border-b border-white/5">Services</a>
                     <a href="#portfolio" class="mobile-nav-item px-6 py-4 text-white font-medium hover:bg-white/10 transition-colors border-b border-white/5">Portfolio</a>
@@ -1496,8 +1496,8 @@
                         </div>
                     </div>
                     
-                    <!-- Right - 3D AI Energy Core Animation (Desktop) -->
-                    <div class="relative h-[350px] sm:h-[450px] md:h-[500px] lg:h-[600px] flex items-center justify-center hidden lg:block">
+                    <!-- Right - 3D AI Energy Core Animation (Desktop + Mobile) -->
+                    <div class="relative h-[320px] sm:h-[420px] md:h-[500px] lg:h-[600px] flex items-center justify-center block">
                         <!-- AI Energy Core Container -->
                         <div class="ai-core-container">
                             <!-- Outer Rotating Rings -->
@@ -1560,25 +1560,8 @@
                 </div>
                     </div>
                     
-                    <!-- Mobile Hero Animation Fallback (Lottie) -->
-                    <div class="block lg:hidden w-full mt-6">
-                        <div class="hero-animation-container" style="width:100%;height:40vh;max-height:400px;min-height:260px;">
-                            <dotlottie-wc 
-                                id="hero-mobile-lottie"
-                                src="https://lottie.host/fec437cb-0991-4b2e-b1d7-e8810f7a8e2e/aVpTVUKJ9a.lottie"
-                                style="width:100%;height:100%;"
-                                autoplay
-                                loop
-                                renderer="svg"
-                                background="transparent"
-                                speed="0.8"
-                                mode="normal">
-                            </dotlottie-wc>
-                            <noscript>
-                                <img src="images/sevorse-logo-white.png" alt="SEVORSE" style="width:100%;height:100%;object-fit:contain;" />
-                            </noscript>
-                        </div>
-                    </div>
+                    <!-- Mobile block extra spacing retained -->
+                    
                 </div>
             </div>
         </div>
@@ -2305,7 +2288,7 @@
     <!-- Pricing Modal - New Layout: Membership Top, Packages Below with Lock -->
     <div id="pricing-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="pricing-modal-title">
         <div class="absolute inset-0 bg-black"></div>
-        <div class="relative z-10 h-screen flex items-center justify-center text-white overflow-hidden p-2 md:p-4">
+        <div class="relative z-10 h-screen flex items-center justify-center text-white overflow-hidden p-2 md:p-4 pricing-modal-content">
             <!-- Animated background energy waves -->
             <div class="pricing-bg">
                 <div class="wave-layer-1"></div>
