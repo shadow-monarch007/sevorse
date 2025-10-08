@@ -429,7 +429,7 @@ function initMobileMenu() {
         return;
     }
     
-    // Simple toggle function
+    // Optimized toggle function - minimal operations
     function toggleMenu() {
         const isHidden = mobileMenu.classList.contains('hidden');
         console.log('🔄 Toggle menu. Currently hidden:', isHidden);
@@ -438,13 +438,16 @@ function initMobileMenu() {
             // Open menu
             mobileMenu.classList.remove('hidden');
             mobileMenu.classList.add('active');
-            document.body.style.overflow = 'hidden';
+            // Use position fixed instead of overflow hidden for better performance
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
             console.log('✅ Menu opened');
         } else {
             // Close menu
             mobileMenu.classList.add('hidden');
             mobileMenu.classList.remove('active');
-            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
             console.log('✅ Menu closed');
         }
         
@@ -457,27 +460,31 @@ function initMobileMenu() {
         }
     }
     
-    // Button click handler
+    // Button click handler with passive event
     mobileMenuBtn.addEventListener('click', function(e) {
         console.log('🖱️ Menu button clicked');
         e.preventDefault();
         e.stopPropagation();
         toggleMenu();
-    });
+    }, { passive: false });
     
-    // Close on nav item click
+    // Close on nav item click - optimized
     mobileNavItems.forEach((item, index) => {
         item.addEventListener('click', function() {
             console.log(`📍 Nav item ${index} clicked`);
-            mobileMenu.classList.add('hidden');
-            mobileMenu.classList.remove('active');
-            document.body.style.overflow = '';
-            
-            const svg = mobileMenuBtn.querySelector('svg');
-            if (svg) {
-                svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
-            }
-        });
+            // Small delay to allow navigation to start before closing
+            setTimeout(() => {
+                mobileMenu.classList.add('hidden');
+                mobileMenu.classList.remove('active');
+                document.body.style.position = '';
+                document.body.style.width = '';
+                
+                const svg = mobileMenuBtn.querySelector('svg');
+                if (svg) {
+                    svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
+                }
+            }, 100);
+        }, { passive: true });
     });
     
     console.log('✅ Mobile menu initialized successfully');

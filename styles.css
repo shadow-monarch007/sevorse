@@ -679,6 +679,18 @@ body.custom-cursor-active *:hover {
     font-size: 14px;
     min-height: 100vh;
     min-height: -webkit-fill-available;
+    /* Peak mobile performance */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeSpeed !important; /* Faster rendering */
+    transform: translateZ(0); /* Force GPU acceleration on body only */
+  }
+  
+  /* Remove all internal scrolling containers */
+  section,
+  div {
+    overflow-x: hidden !important;
+    overflow-y: visible !important; /* Let page scroll naturally */
   }
   
   /* Section spacing optimization */
@@ -776,7 +788,7 @@ body.custom-cursor-active *:hover {
   .ring-2 { width: 140px; height: 140px; } /* Reduced from 160 */
   .ring-3 { width: 200px; height: 200px; } /* Reduced from 220 */
   
-  /* Aggressive performance optimization - hide ALL heavy animations */
+  /* PEAK PERFORMANCE - Disable ALL heavy animations on mobile */
   .energy-particles,
   .mini-energy-core,
   .cube-face::before,
@@ -785,25 +797,40 @@ body.custom-cursor-active *:hover {
     display: none !important;
   }
   
-  /* Simplify cube animations - reduce GPU load */
+  /* Simplify ALL animations - remove GPU overhead */
+  * {
+    animation-duration: 0.2s !important; /* Fast transitions only */
+    transition-duration: 0.2s !important;
+    will-change: auto !important; /* Remove all will-change */
+  }
+  
+  /* Minimal cube animation - very slow for smoothness */
   .tesseract-cube,
   .inner-cube,
   .outer-cube {
-    animation-duration: 80s !important; /* Slowed from 60s */
+    animation-duration: 120s !important; /* Ultra slow */
     will-change: auto !important;
   }
   
   .energy-ring-1 { 
-    animation-duration: 70s !important; /* Slowed from 50s */
+    animation-duration: 100s !important;
     will-change: auto !important;
   }
   .energy-ring-2 { 
-    animation-duration: 75s !important; /* Slowed from 55s */
+    animation-duration: 110s !important;
     will-change: auto !important;
   }
   .energy-ring-3 { 
-    animation-duration: 65s !important; /* Slowed from 45s */
+    animation-duration: 90s !important;
     will-change: auto !important;
+  }
+  
+  /* Disable complex transforms on scroll */
+  .io-reveal,
+  .fade-in,
+  .slide-up {
+    opacity: 1 !important;
+    transform: none !important;
   }
 
   /* Mobile hero animation container sizing */
@@ -860,12 +887,12 @@ body.custom-cursor-active *:hover {
     white-space: nowrap;
   }
   
-  /* Pricing Modal - Mobile Optimized - ULTRA COMPACT */
+  /* Pricing Modal - Mobile Optimized - NO INTERNAL SCROLLING */
   .pricing-modal-content {
     animation: modalSlideUp 0.3s ease-out;
-    max-height: 90vh !important;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    max-height: none !important; /* Remove scroll container */
+    overflow-y: visible !important; /* No internal scroll */
+    -webkit-overflow-scrolling: auto;
     padding: 0.5rem !important;
     margin: 0.25rem !important;
     width: calc(100vw - 0.5rem) !important;
@@ -1016,18 +1043,18 @@ body.custom-cursor-active *:hover {
   
   .pricing-wrap {
     padding: 0.5rem !important;
-    max-height: 85vh !important;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important;
+    max-height: none !important; /* Remove height limit */
+    overflow-y: visible !important; /* No internal scroll */
+    -webkit-overflow-scrolling: auto !important;
     width: 100% !important;
     display: flex !important;
     flex-direction: column !important;
   }
   
-  /* Pricing modal viewport optimization */
+  /* Pricing modal viewport optimization - NO INTERNAL SCROLL */
   #pricing-modal {
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important;
+    overflow-y: visible !important; /* Let page scroll naturally */
+    -webkit-overflow-scrolling: auto !important;
   }
   
   /* Packages row - vertical stacking on mobile */
