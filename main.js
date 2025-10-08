@@ -100,6 +100,8 @@ function initModals() {
         bookCard: DOMCache.get('book-card')
     };
     
+            const robot = DOMCache.get('pricing-robot');
+            if (robot) robot.style.visibility = 'hidden';
     const closeBtns = {
         consultation: [DOMCache.get('close-consultation-modal'), DOMCache.get('cancel-consultation')],
         aboutUs: [DOMCache.get('close-about-us-modal')]
@@ -108,6 +110,8 @@ function initModals() {
     // Helper to open modal with animation
     const openModal = (modal) => {
         if (!modal) return;
+            const robot = DOMCache.get('pricing-robot');
+            if (robot) robot.style.visibility = '';
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
         
@@ -289,6 +293,8 @@ function initPricingRobot() {
         e.preventDefault();
         pricingModal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
+        // Hide floating button while modal is open to avoid overlap
+        robot.style.display = 'none';
         
         // Optimized animations
         if (typeof gsap !== 'undefined') {
@@ -314,15 +320,19 @@ function initPricingRobot() {
                     onComplete: () => {
                         pricingModal.classList.add('hidden');
                         document.body.style.overflow = 'auto';
+                        // Restore floating button
+                        robot.style.display = '';
                         const mobileStack = document.getElementById('mobile-pricing-stack');
                         if (mobileStack) mobileStack.setAttribute('aria-hidden', 'true');
                     }
                 });
             } else {
                 closeModal(pricingModal);
+                robot.style.display = '';
             }
         } else {
             closeModal(pricingModal);
+            robot.style.display = '';
         }
     };
     
@@ -438,10 +448,18 @@ function initMobileMenu() {
             menu.classList.remove('hidden');
             menu.classList.add('active');
             btn.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
+            // Lock background scroll
+            document.body.style.overflow = 'hidden';
+            btn.setAttribute('aria-expanded', 'true');
+            menu.setAttribute('aria-hidden', 'false');
         } else {
             menu.classList.add('hidden');
             menu.classList.remove('active');
             btn.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>';
+            // Restore background scroll
+            document.body.style.overflow = '';
+            btn.setAttribute('aria-expanded', 'false');
+            menu.setAttribute('aria-hidden', 'true');
         }
     }
     
@@ -462,6 +480,20 @@ function initMobileMenu() {
                 setTimeout(() => toggle(), 50); // Small delay for smooth navigation
             }
         };
+    });
+
+    // Click on overlay background closes menu
+    menu.addEventListener('click', (e) => {
+        if (e.target === menu && isOpen) {
+            toggle();
+        }
+    });
+
+    // Escape key closes menu
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isOpen) {
+            toggle();
+        }
     });
     
     console.log('✅ Mobile menu ready -', links.length, 'links');

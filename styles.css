@@ -630,13 +630,12 @@ body.custom-cursor-active *:hover {
     left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    z-index: -1 !important;
     pointer-events: none !important;
   }
   
   #mobile-menu.active {
     display: flex !important;
-    z-index: 999999 !important;
+    z-index: 9999999 !important; /* Above all */
     pointer-events: auto !important;
     background: rgba(0, 0, 0, 0.98) !important;
     backdrop-filter: blur(15px) !important;
@@ -658,11 +657,10 @@ body.custom-cursor-active *:hover {
     text-align: center !important;
   }
   
-  /* Ensure navbar stays visible above menu */
+  /* Ensure navbar has sane stacking without eclipsing overlay */
   nav,
-  header,
-  .fixed {
-    z-index: 9999999 !important; /* Higher than menu overlay */
+  header {
+    z-index: 10000 !important;
   }
   
   /* Floating pricing button - ALWAYS visible on all sections */
@@ -687,7 +685,7 @@ body.custom-cursor-active *:hover {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeSpeed !important;
-    transform: translateZ(0);
+    /* Avoid transforms on body to keep position:fixed stable */
     overflow-x: hidden !important; /* Prevent horizontal scroll only */
   }
   
@@ -1124,23 +1122,8 @@ body.custom-cursor-active *:hover {
     -webkit-backdrop-filter: blur(4px);
   }
   
-  #mobile-menu {
-    animation: slideDown 0.22s ease-out;
-    max-height: 100vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  @keyframes slideDown {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
+  /* Optional: subtle fade for overlay */
+  #mobile-menu.active { animation: fadeIn 0.2s ease-out; }
   
   .mobile-nav-item { font-size: 18px; }
   /* Prevent header area from blurring content beneath when menu opens */
@@ -1228,28 +1211,7 @@ body.custom-cursor-active *:hover {
   .cube-face::before { display: none !important; }
   .mini-core-ring { display: none !important; }
 
-  /* Mobile menu overlay - completely rebuilt for reliability */
-  #mobile-menu {
-    display: none !important;
-  }
-  
-  #mobile-menu.active {
-    display: flex !important;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background: rgba(0, 0, 0, 0.97) !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-    z-index: 999999 !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 2rem !important;
-    animation: fadeIn 0.2s ease-out !important;
-  }
+  /* Mobile menu overlay - ensure single definition (top of file sets layout) */
   
   @keyframes fadeIn {
     from { opacity: 0; }
@@ -1457,7 +1419,7 @@ body.custom-cursor-active *:hover {
 }
 
 /* Pricing robot floating button */
-.pricing-robot {
+.pricing-robot, #pricing-robot {
   position: fixed;
   bottom: 20px;
   right: 20px;
@@ -1471,7 +1433,7 @@ body.custom-cursor-active *:hover {
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(1, 142, 239, 0.3);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  z-index: 40;
+  z-index: 10001; /* above content, below overlays */
   border: none;
   will-change: transform;
 }

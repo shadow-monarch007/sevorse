@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -43,7 +46,7 @@
     </script>
     
     <!-- Project Stylesheet -->
-    <link rel="stylesheet" href="styles.css?v=20251007-3" />
+    <link rel="stylesheet" href="styles.css?v=20251008-1" />
 
     <!-- Custom Styles -->
     <style>
@@ -80,6 +83,26 @@
                 display: none;
             }
         }
+
+        /* ---- Inline Hotfix (cache-bust overlay & fixed button) 2025-10-08.1 ---- */
+        @media (max-width: 768px) {
+            #mobile-menu.active {
+                display: flex !important;
+                position: fixed !important;
+                top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+                width: 100vw !important; height: 100vh !important;
+                z-index: 9999999 !important;
+                background: rgba(0,0,0,0.98) !important;
+                backdrop-filter: blur(12px) !important;
+                -webkit-backdrop-filter: blur(12px) !important;
+            }
+            #pricing-robot {
+                position: fixed !important;
+                bottom: 1.5rem !important; right: 1.5rem !important;
+                z-index: 10001 !important;
+            }
+        }
+        /* ---- End Inline Hotfix ---- */
         
         :root {
             --sevorse-blue: #1976D2;
@@ -2293,7 +2316,7 @@
     <!-- Pricing Modal - New Layout: Membership Top, Packages Below with Lock -->
     <div id="pricing-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="pricing-modal-title">
         <div class="absolute inset-0 bg-black"></div>
-        <div class="relative z-10 h-screen flex items-center justify-center text-white overflow-hidden p-2 md:p-4 pricing-modal-content">
+        <div class="relative z-10 flex items-center justify-center text-white p-2 md:p-4 pricing-modal-content">
             <!-- Animated background energy waves -->
             <div class="pricing-bg">
                 <div class="wave-layer-1"></div>
@@ -2302,7 +2325,7 @@
             </div>
             
             <!-- Pricing Wrapper - Contains Everything -->
-            <div class="pricing-wrap max-h-[95vh] overflow-y-auto">
+            <div class="pricing-wrap">
                 <!-- Top bar -->
                 <div class="flex items-center justify-between flex-shrink-0 mb-3 md:mb-4">
                     <div class="flex items-center gap-2 md:gap-4">
@@ -2577,13 +2600,31 @@
 
     
     <!-- Scripts -->
-    <script src="main.js?v=20251003-2"></script>
+    <script src="main.js?v=20251008-1"></script>
     
     <!-- DotLottie Web Component for Animations -->
     <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.1/dist/dotlottie-wc.js" type="module"></script>
     
     <script src="gsap-animations.js"></script>
         <script>
+        // Boot marker to confirm fresh assets loaded
+        console.log('[SEVORSE] Boot 2025-10-08.1');
+        // Fallback: if menu didn’t initialize due to cached JS, add a tiny safe toggle
+        document.addEventListener('DOMContentLoaded', function(){
+            try {
+                var btn = document.getElementById('mobile-menu-btn');
+                var menu = document.getElementById('mobile-menu');
+                if (btn && menu && !btn.__fallbackBound) {
+                    btn.__fallbackBound = true;
+                    btn.addEventListener('click', function(e){
+                        e.preventDefault();
+                        menu.classList.toggle('hidden');
+                        menu.classList.toggle('active');
+                        document.body.style.overflow = menu.classList.contains('active') ? 'hidden' : '';
+                    });
+                }
+            } catch(e) { console.warn('Fallback init error', e); }
+        });
                         // Pricing carousel - infinite loop, 3 visible + 1 back, center glow
                         (function(){
                             const wrap = document.getElementById('ppCarousel');
