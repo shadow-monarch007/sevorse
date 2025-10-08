@@ -622,39 +622,37 @@ body.custom-cursor-active *:hover {
 
 /* Mobile Performance Optimizations */
 @media (max-width: 768px) {
-  /* Mobile menu overlay - positioned BELOW navbar, not fullscreen */
+  /* MOBILE MENU - SIMPLE AND WORKING */
   #mobile-menu {
-    display: none !important;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: -1;
+    pointer-events: none;
   }
   
   #mobile-menu.active {
-    display: flex !important;
-    position: fixed !important;
-    top: 80px !important; /* Start below navbar */
-    left: 0 !important;
-    width: 100vw !important;
-    height: calc(100vh - 80px) !important; /* Fill remaining space */
-    background: rgba(0, 0, 0, 0.97) !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-    z-index: 999999 !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    padding: 2rem 1rem !important;
-    animation: slideDown 0.3s ease-out !important;
-    overflow-y: auto !important;
+    display: block !important;
+    z-index: 99999 !important;
+    pointer-events: auto !important;
   }
   
-  @keyframes slideDown {
-    from { 
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    to { 
-      opacity: 1;
-      transform: translateY(0);
-    }
+  #mobile-menu .flex {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.98);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 2rem 1rem;
   }
   
   #mobile-menu.active .mobile-nav-item { 
@@ -682,15 +680,23 @@ body.custom-cursor-active *:hover {
     /* Peak mobile performance */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeSpeed !important; /* Faster rendering */
-    transform: translateZ(0); /* Force GPU acceleration on body only */
+    text-rendering: optimizeSpeed !important;
+    transform: translateZ(0);
+    overflow-x: hidden !important; /* Prevent horizontal scroll only */
   }
   
-  /* Remove all internal scrolling containers */
-  section,
-  div {
-    overflow-x: hidden !important;
-    overflow-y: visible !important; /* Let page scroll naturally */
+  /* Hero 3D animation container - NO internal scrollbar */
+  .hero-animation-container,
+  .ai-core-container,
+  #ai-energy-core {
+    overflow: visible !important;
+  }
+  
+  /* Lottie containers - NO internal scrollbar */
+  dotlottie-player,
+  .lottie-container,
+  .animation-container {
+    overflow: visible !important;
   }
   
   /* Section spacing optimization */
@@ -887,15 +893,16 @@ body.custom-cursor-active *:hover {
     white-space: nowrap;
   }
   
-  /* Pricing Modal - Mobile Optimized - NO INTERNAL SCROLLING */
+  /* Pricing Modal - Fast Loading, NO internal scroll */
   .pricing-modal-content {
-    animation: modalSlideUp 0.3s ease-out;
-    max-height: none !important; /* Remove scroll container */
-    overflow-y: visible !important; /* No internal scroll */
-    -webkit-overflow-scrolling: auto;
+    animation: none !important; /* Remove animation for faster load */
+    max-height: none !important;
+    overflow-y: visible !important;
+    overflow-x: hidden !important;
     padding: 0.5rem !important;
     margin: 0.25rem !important;
     width: calc(100vw - 0.5rem) !important;
+    will-change: auto !important; /* Remove GPU overhead */
   }
   
   .pricing-modal-content h2 {
@@ -1043,18 +1050,19 @@ body.custom-cursor-active *:hover {
   
   .pricing-wrap {
     padding: 0.5rem !important;
-    max-height: none !important; /* Remove height limit */
-    overflow-y: visible !important; /* No internal scroll */
-    -webkit-overflow-scrolling: auto !important;
+    max-height: none !important;
+    overflow: visible !important; /* NO scrollbar */
     width: 100% !important;
     display: flex !important;
     flex-direction: column !important;
+    will-change: auto !important;
   }
   
-  /* Pricing modal viewport optimization - NO INTERNAL SCROLL */
+  /* Pricing modal - Fast load, no animation */
   #pricing-modal {
-    overflow-y: visible !important; /* Let page scroll naturally */
-    -webkit-overflow-scrolling: auto !important;
+    overflow: visible !important;
+    animation: none !important; /* Remove for faster load */
+    transition: opacity 0.15s ease !important; /* Quick fade only */
   }
   
   /* Packages row - vertical stacking on mobile */

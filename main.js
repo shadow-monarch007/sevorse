@@ -412,82 +412,59 @@ function initPackageToggle() {
 }
 
 // Mobile Menu Toggle
+// MOBILE MENU - COMPLETELY REBUILT FOR RELIABILITY
 function initMobileMenu() {
-    console.log('🔧 initMobileMenu called');
-    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
-    const mobileNavItems = document.querySelectorAll('.mobile-nav-item');
+    console.log('🔧 Mobile Menu Init - Starting...');
     
-    console.log('🔍 Elements found:', {
-        btn: !!mobileMenuBtn,
-        menu: !!mobileMenu,
-        items: mobileNavItems.length
-    });
+    const btn = document.getElementById('mobile-menu-btn');
+    const menu = document.getElementById('mobile-menu');
     
-    if (!mobileMenuBtn || !mobileMenu) {
-        console.error('❌ Mobile menu elements not found!');
+    if (!btn || !menu) {
+        console.error('❌ Menu elements missing!', { btn: !!btn, menu: !!menu });
         return;
     }
     
-    // Optimized toggle function - minimal operations
-    function toggleMenu() {
-        const isHidden = mobileMenu.classList.contains('hidden');
-        console.log('🔄 Toggle menu. Currently hidden:', isHidden);
+    console.log('✅ Menu elements found');
+    
+    // Simple state
+    let isOpen = false;
+    
+    // Toggle function
+    function toggle() {
+        isOpen = !isOpen;
+        console.log(isOpen ? '� Opening menu' : '📁 Closing menu');
         
-        if (isHidden) {
-            // Open menu
-            mobileMenu.classList.remove('hidden');
-            mobileMenu.classList.add('active');
-            // Use position fixed instead of overflow hidden for better performance
-            document.body.style.position = 'fixed';
-            document.body.style.width = '100%';
-            console.log('✅ Menu opened');
+        if (isOpen) {
+            menu.classList.remove('hidden');
+            menu.classList.add('active');
+            btn.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
         } else {
-            // Close menu
-            mobileMenu.classList.add('hidden');
-            mobileMenu.classList.remove('active');
-            document.body.style.position = '';
-            document.body.style.width = '';
-            console.log('✅ Menu closed');
-        }
-        
-        // Update icon
-        const svg = mobileMenuBtn.querySelector('svg');
-        if (svg) {
-            svg.innerHTML = isHidden 
-                ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>'
-                : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
+            menu.classList.add('hidden');
+            menu.classList.remove('active');
+            btn.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>';
         }
     }
     
-    // Button click handler with passive event
-    mobileMenuBtn.addEventListener('click', function(e) {
-        console.log('🖱️ Menu button clicked');
+    // Button click
+    btn.onclick = function(e) {
         e.preventDefault();
         e.stopPropagation();
-        toggleMenu();
-    }, { passive: false });
+        console.log('🖱️ Button clicked');
+        toggle();
+    };
     
-    // Close on nav item click - optimized
-    mobileNavItems.forEach((item, index) => {
-        item.addEventListener('click', function() {
-            console.log(`📍 Nav item ${index} clicked`);
-            // Small delay to allow navigation to start before closing
-            setTimeout(() => {
-                mobileMenu.classList.add('hidden');
-                mobileMenu.classList.remove('active');
-                document.body.style.position = '';
-                document.body.style.width = '';
-                
-                const svg = mobileMenuBtn.querySelector('svg');
-                if (svg) {
-                    svg.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
-                }
-            }, 100);
-        }, { passive: true });
+    // Close on link click
+    const links = menu.querySelectorAll('a');
+    links.forEach((link, i) => {
+        link.onclick = function() {
+            console.log(`📍 Link ${i} clicked`);
+            if (isOpen) {
+                setTimeout(() => toggle(), 50); // Small delay for smooth navigation
+            }
+        };
     });
     
-    console.log('✅ Mobile menu initialized successfully');
+    console.log('✅ Mobile menu ready -', links.length, 'links');
 }
 
 // Smooth Scrolling for Anchor Links
