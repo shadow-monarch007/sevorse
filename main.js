@@ -99,9 +99,7 @@ function initModals() {
         consultBtn: DOMCache.get('consultation-btn'),
         bookCard: DOMCache.get('book-card')
     };
-    
-            const robot = DOMCache.get('pricing-robot');
-            if (robot) robot.style.visibility = 'hidden';
+
     const closeBtns = {
         consultation: [DOMCache.get('close-consultation-modal'), DOMCache.get('cancel-consultation')],
         aboutUs: [DOMCache.get('close-about-us-modal')]
@@ -110,8 +108,6 @@ function initModals() {
     // Helper to open modal with animation
     const openModal = (modal) => {
         if (!modal) return;
-            const robot = DOMCache.get('pricing-robot');
-            if (robot) robot.style.visibility = '';
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
         
@@ -744,7 +740,32 @@ function initPerformanceOptimizations() {
     });
 }
 
-// Utility Functions
+    // Utility: inline style fallback to enforce overlay if CSS is stale/not applied
+    function enforceMenuOverlayStyles(open) {
+        if (!menu) return;
+        if (open) {
+            // Force overlay properties inline to bypass stale caches
+            menu.style.position = 'fixed';
+            menu.style.top = '0';
+            menu.style.left = '0';
+            menu.style.width = '100vw';
+            menu.style.height = '100vh';
+            menu.style.display = 'flex';
+            menu.style.flexDirection = 'column';
+            menu.style.background = 'rgba(0,0,0,0.98)';
+            menu.style.backdropFilter = 'blur(12px)';
+            menu.style.webkitBackdropFilter = 'blur(12px)';
+            menu.style.zIndex = '9999999';
+            menu.style.padding = '90px 16px 32px 16px';
+            menu.style.overflowY = 'auto';
+            menu.style.pointerEvents = 'auto';
+        } else {
+            // Clean back to stylesheet control
+            menu.removeAttribute('style');
+        }
+    }
+
+    // Toggle function
 function initUtilityFunctions() {
     // Note: debounce and throttle are now defined at top level
     // This function kept for other utility initializations
@@ -759,6 +780,10 @@ function initUtilityFunctions() {
             rect.right <= (window.innerWidth || document.documentElement.clientWidth)
         );
     };
+            // Ensure overlay is visible even if CSS is cached
+            if (window.getComputedStyle(menu).display === 'none') {
+                enforceMenuOverlayStyles(true);
+            }
     
     // Get scroll percentage
     window.getScrollPercentage = function() {
@@ -769,6 +794,7 @@ function initUtilityFunctions() {
     
     // Copy text to clipboard
     window.copyToClipboard = function(text) {
+            enforceMenuOverlayStyles(false);
         if (navigator.clipboard) {
             return navigator.clipboard.writeText(text);
         } else {

@@ -2614,6 +2614,12 @@
             try {
                 var btn = document.getElementById('mobile-menu-btn');
                 var menu = document.getElementById('mobile-menu');
+                var robot = document.getElementById('pricing-robot');
+                if (robot) {
+                    robot.style.display = '';
+                    robot.style.visibility = 'visible';
+                    robot.style.opacity = '1';
+                }
                 if (btn && menu && !btn.__fallbackBound) {
                     btn.__fallbackBound = true;
                     btn.addEventListener('click', function(e){
