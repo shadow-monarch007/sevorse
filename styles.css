@@ -711,16 +711,55 @@ body.custom-cursor-active *:hover {
     padding-bottom: 3rem !important;
   }
   
-  /* Hero section mobile fix - tighter spacing to reduce empty gaps */
+  /* Hero section mobile fix - ENTIRE hero visible on load, no scroll needed */
   #home {
     min-height: 100vh;
     min-height: -webkit-fill-available;
     display: flex;
     align-items: center;
-    padding-top: 6rem !important;
-    padding-bottom: 2rem !important;
+    padding-top: 4rem !important; /* Reduced from 6rem */
+    padding-bottom: 1rem !important;
     /* Disable heavy background animations on mobile for instant load */
     background-attachment: scroll !important;
+  }
+  
+  #home .grid {
+    width: 100%;
+    gap: 0.5rem !important; /* Tighter spacing */
+  }
+  
+  /* Reduce all spacing in hero content */
+  #home .space-y-3,
+  #home .space-y-4,
+  #home .space-y-2 {
+    gap: 0.5rem !important;
+  }
+  
+  /* Ensure hero text is compact and always visible */
+  #hero-headline {
+    font-size: 1.875rem !important; /* 30px */
+    line-height: 1.1 !important;
+    margin-bottom: 0.5rem !important;
+    margin-top: 0 !important;
+  }
+  
+  #hero-description {
+    font-size: 0.75rem !important; /* 12px */
+    line-height: 1.5 !important;
+    margin-bottom: 0.5rem !important;
+    margin-top: 0.5rem !important;
+  }
+  
+  /* Compact buttons */
+  #home .btn-primary,
+  #home .btn-ghost {
+    font-size: 0.75rem !important;
+    padding: 0.5rem 1rem !important;
+  }
+  
+  /* 3D animation - smaller on mobile */
+  .ai-core-container {
+    transform: scale(0.7) !important;
   }
   
   /* Kill expensive animations on mobile load */
@@ -1104,16 +1143,21 @@ body.custom-cursor-active *:hover {
     gap: 0.5rem !important;
     width: 100% !important;
   }
-  /* Pricing cards responsive width */
-  .package-card, .pricing-card {
+  /* Pricing cards responsive width - CONSISTENT backgrounds for all 4 cards */
+  .package-card, .pricing-card, .membership-card {
     width: 94% !important;
     max-width: 460px !important;
     margin-left: auto !important;
     margin-right: auto !important;
-    background: rgba(10, 15, 30, 0.55) !important;
-    border: 1px solid rgba(96,165,250,0.25) !important;
+    background: rgba(255, 255, 255, 0.10) !important; /* Consistent translucent white */
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
     backdrop-filter: blur(16px) !important;
     -webkit-backdrop-filter: blur(16px) !important;
+    transition: background 0.3s ease !important;
+  }
+  
+  .package-card:hover, .pricing-card:hover, .membership-card:hover {
+    background: rgba(255, 255, 255, 0.20) !important; /* Lighter on hover */
   }
   /* Ensure packages are never blurred on mobile for readability */
   .package-card.blurred { filter: none !important; opacity: 1 !important; pointer-events: auto !important; transform: none !important; }
