@@ -47,120 +47,144 @@ const DOMCache = {
     }
 };
 
+// Smooth scrolling for anchor links with safety checks
+function initSmoothScrolling() {
+    try {
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                // Ignore just '#' or empty
+                if (!href || href === '#') return;
+                const targetId = href.slice(1);
+                const target = document.getElementById(targetId);
+                if (!target) return;
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    } catch (_) {}
+}
+
 // Main initialization
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize core functionality
     initUtilityFunctions();
-    initMobileMenu();
     initSmoothScrolling();
-    initPerformanceOptimizations();
-    
-    // Initialize custom cursor (always - removed touch detection)
-    initCustomCursor();
-    
-    // Single initialization point for interactive elements
-    initInteractiveElements();
-    
-    // Initialize supplementary features
-    initGallery();
-    initIORevealFallback();
-});
+    // Ensure pricing robot is visible on load
+    const _robot = document.getElementById('pricing-robot');
+    if (_robot) { _robot.style.visibility = ''; _robot.style.display = ''; }
 
-// Initialize scroll animations after window loads
-window.addEventListener('load', function() {
-    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
-        requestAnimationFrame(() => {
-            initScrollStacking();
-            initInteractiveCTASection();
+    // Initialize mobile menu (portal-based)
+    initMobileMenu();
+    // Initialize pricing robot/modal
+    initPricingRobot();
+    // Initialize scroll effects and Vanta background (safe no-ops on mobile)
+    initScrollStacking();
+    initVantaRings();
+    // Lightweight extras
+    initPerformanceOptimizations();
+    initMagneticElements();
+
+    function initMobileMenu() {
+        console.log('🔧 Mobile Menu Init - Starting...');
+
+        const btn = document.getElementById('mobile-menu-btn');
+        const source = document.getElementById('mobile-menu');
+
+        if (!btn || !source) {
+            console.error('❌ Menu elements missing!', { btn: !!btn, menu: !!source });
+            return;
+        }
+
+        // Create a body-level portal copy to avoid stacking/overflow issues
+        let menu = document.getElementById('mobile-menu-portal');
+        if (!menu) {
+            menu = document.createElement('div');
+            menu.id = 'mobile-menu-portal';
+            menu.className = 'nav-menu hidden';
+            menu.innerHTML = source.innerHTML;
+            document.body.appendChild(menu);
+            // Keep original hidden
+            source.classList.add('hidden');
+        }
+
+        let isOpen = false;
+
+        function enforceMenuOverlayStyles(open) {
+            if (!menu) return;
+            if (open) {
+                menu.style.position = 'fixed';
+                menu.style.top = '0';
+                menu.style.left = '0';
+                menu.style.right = '0';
+                menu.style.bottom = '0';
+                menu.style.width = '100vw';
+                menu.style.height = '100vh';
+                menu.style.display = 'flex';
+                menu.style.flexDirection = 'column';
+                menu.style.background = 'rgba(0,0,0,0.98)';
+                menu.style.backdropFilter = 'blur(12px)';
+                menu.style.webkitBackdropFilter = 'blur(12px)';
+                menu.style.zIndex = '2147483647';
+                menu.style.padding = '90px 16px 32px 16px';
+                menu.style.overflowY = 'auto';
+                menu.style.pointerEvents = 'auto';
+            } else {
+                menu.removeAttribute('style');
+            }
+        }
+
+        function toggle() {
+            isOpen = !isOpen;
+            console.log(isOpen ? '📂 Opening menu' : '📁 Closing menu');
+
+            if (isOpen) {
+                menu.classList.remove('hidden');
+                menu.classList.add('active');
+                enforceMenuOverlayStyles(true);
+                btn.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
+                document.body.style.overflow = 'hidden';
+                btn.setAttribute('aria-expanded', 'true');
+                menu.setAttribute('aria-hidden', 'false');
+                const robot = document.getElementById('pricing-robot');
+                if (robot) robot.style.visibility = 'hidden';
+            } else {
+                menu.classList.add('hidden');
+                menu.classList.remove('active');
+                enforceMenuOverlayStyles(false);
+                btn.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>';
+                document.body.style.overflow = '';
+                btn.setAttribute('aria-expanded', 'false');
+                menu.setAttribute('aria-hidden', 'true');
+                const robot = document.getElementById('pricing-robot');
+                if (robot) robot.style.visibility = '';
+            }
+        }
+
+        btn.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggle();
+        };
+
+        const links = menu.querySelectorAll('a');
+        links.forEach((link, i) => {
+            link.onclick = function() {
+                if (isOpen) setTimeout(() => toggle(), 50);
+            };
         });
+
+        menu.addEventListener('click', (e) => {
+            if (e.target === menu && isOpen) toggle();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isOpen) toggle();
+        });
+
+        console.log('✅ Mobile menu ready -', links.length, 'links');
     }
 });
-
-// Consolidated initialization for all interactive elements
-function initInteractiveElements() {
-    // Wait for next frame to ensure DOM is stable
-    requestAnimationFrame(() => {
-        initModals();
-        initConsultationForm();
-        initPricingRobot();
-        initMagneticElements();
-    });
-}
-
-// Modal Management (Optimized)
-function initModals() {
-    // Cache modal elements
-    const modals = {
-        consultation: DOMCache.get('consultation-modal'),
-        aboutUs: DOMCache.get('about-us-modal')
-    };
-    
-    const triggers = {
-        consultBtn: DOMCache.get('consultation-btn'),
-        bookCard: DOMCache.get('book-card')
-    };
-
-    const closeBtns = {
-        consultation: [DOMCache.get('close-consultation-modal'), DOMCache.get('cancel-consultation')],
-        aboutUs: [DOMCache.get('close-about-us-modal')]
-    };
-    
-    // Helper to open modal with animation
-    const openModal = (modal) => {
-        if (!modal) return;
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        
-        if (typeof gsap !== 'undefined') {
-            const content = modal.querySelector('.bg-white, .pricing-modal-content, .bg-black');
-            if (content) {
-                gsap.fromTo(content, 
-                    { scale: 0.8, opacity: 0 },
-                    { scale: 1, opacity: 1, duration: 0.3, ease: 'back.out(1.7)' }
-                );
-            }
-        }
-    };
-    
-    // Consultation triggers
-    [triggers.consultBtn, triggers.bookCard].forEach(trigger => {
-        if (trigger && modals.consultation) {
-            trigger.addEventListener('click', (e) => {
-                e.preventDefault();
-                openModal(modals.consultation);
-            });
-        }
-    });
-    
-    // Close button handlers
-    Object.entries(closeBtns).forEach(([modalKey, buttons]) => {
-        buttons.forEach(btn => {
-            if (btn && modals[modalKey]) {
-                btn.addEventListener('click', () => closeModal(modals[modalKey]));
-            }
-        });
-    });
-    
-    // Backdrop clicks
-    Object.values(modals).forEach(modal => {
-        if (modal) {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) closeModal(modal);
-            });
-        }
-    });
-    
-    // Escape key handler (single listener)
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            Object.values(modals).forEach(modal => {
-                if (modal && !modal.classList.contains('hidden')) {
-                    closeModal(modal);
-                }
-            });
-        }
-    });
-}
 
 function closeModal(modal) {
     // Choose a reasonable content element for animation
@@ -413,256 +437,10 @@ function initPackageToggle() {
             packageCards.forEach(card => card.classList.remove('blurred'));
         }
     };
+
+    // Ensure readability on small screens and keep updated on resize
     forceMobileReadable();
-    window.addEventListener('resize', forceMobileReadable, { passive: true });
-}
-
-// Mobile Menu Toggle
-// MOBILE MENU - COMPLETELY REBUILT FOR RELIABILITY
-function initMobileMenu() {
-    console.log('🔧 Mobile Menu Init - Starting...');
-    
-    const btn = document.getElementById('mobile-menu-btn');
-    const menu = document.getElementById('mobile-menu');
-    
-    if (!btn || !menu) {
-        console.error('❌ Menu elements missing!', { btn: !!btn, menu: !!menu });
-        return;
-    }
-    
-    console.log('✅ Menu elements found');
-    
-    // Simple state
-    let isOpen = false;
-    
-    // Toggle function
-    function toggle() {
-        isOpen = !isOpen;
-        console.log(isOpen ? '� Opening menu' : '📁 Closing menu');
-        
-        if (isOpen) {
-            menu.classList.remove('hidden');
-            menu.classList.add('active');
-            btn.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
-            // Lock background scroll
-            document.body.style.overflow = 'hidden';
-            btn.setAttribute('aria-expanded', 'true');
-            menu.setAttribute('aria-hidden', 'false');
-        } else {
-            menu.classList.add('hidden');
-            menu.classList.remove('active');
-            btn.querySelector('svg').innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>';
-            // Restore background scroll
-            document.body.style.overflow = '';
-            btn.setAttribute('aria-expanded', 'false');
-            menu.setAttribute('aria-hidden', 'true');
-        }
-    }
-    
-    // Button click
-    btn.onclick = function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('🖱️ Button clicked');
-        toggle();
-    };
-    
-    // Close on link click
-    const links = menu.querySelectorAll('a');
-    links.forEach((link, i) => {
-        link.onclick = function() {
-            console.log(`📍 Link ${i} clicked`);
-            if (isOpen) {
-                setTimeout(() => toggle(), 50); // Small delay for smooth navigation
-            }
-        };
-    });
-
-    // Click on overlay background closes menu
-    menu.addEventListener('click', (e) => {
-        if (e.target === menu && isOpen) {
-            toggle();
-        }
-    });
-
-    // Escape key closes menu
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && isOpen) {
-            toggle();
-        }
-    });
-    
-    console.log('✅ Mobile menu ready -', links.length, 'links');
-}
-
-// Smooth Scrolling for Anchor Links
-function initSmoothScrolling() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
-    });
-}
-
-// Custom Cursor (Desktop only - disabled on mobile/tablet)
-function initCustomCursor() {
-    // Don't initialize cursor on mobile/tablet devices or touch screens
-    if (window.innerWidth <= 1024 || 'ontouchstart' in window || navigator.maxTouchPoints > 0) {
-        // Ensure cursor elements don't exist
-        const existingRing = document.querySelector('.cursor-ring');
-        const existingDot = document.querySelector('.cursor-dot');
-        if (existingRing) existingRing.remove();
-        if (existingDot) existingDot.remove();
-        return;
-    }
-    
-    // Remove any existing cursor elements first (fixes stuck cursor on refresh)
-    const existingRing = document.querySelector('.cursor-ring');
-    const existingDot = document.querySelector('.cursor-dot');
-    if (existingRing) existingRing.remove();
-    if (existingDot) existingDot.remove();
-    
-    // Apply custom cursor class to body
-    document.body.classList.add('custom-cursor-active');
-    
-    const ring = document.createElement('div');
-    const dot = document.createElement('div');
-    ring.className = 'cursor-ring';
-    dot.className = 'cursor-dot';
-    
-    document.body.appendChild(ring);
-    document.body.appendChild(dot);
-
-    let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
-    let ringX = mouseX, ringY = mouseY;
-    const followSpeed = 0.25;
-    let isVisible = true; // Start visible immediately
-
-    // Set initial position at screen center
-    ring.style.left = mouseX + 'px';
-    ring.style.top = mouseY + 'px';
-    dot.style.left = mouseX + 'px';
-    dot.style.top = mouseY + 'px';
-
-    // Optimized mousemove handler
-    document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-    }, { passive: true });
-
-    // Single RAF loop for smooth animation
-    let animationId = null;
-    let isPageVisible = true;
-    
-    function animate() {
-        if (!isPageVisible || !isVisible) {
-            animationId = null;
-            return; // Stop animation when page is hidden or cursor isn't visible
-        }
-        
-        ringX += (mouseX - ringX) * followSpeed;
-        ringY += (mouseY - ringY) * followSpeed;
-        
-        ring.style.left = ringX + 'px';
-        ring.style.top = ringY + 'px';
-        ring.style.transform = 'translate(-50%, -50%)';
-        
-        dot.style.left = mouseX + 'px';
-        dot.style.top = mouseY + 'px';
-        dot.style.transform = 'translate(-50%, -50%)';
-        
-        animationId = requestAnimationFrame(animate);
-    }
-    
-    // Start animation immediately
-    const startAnimation = () => {
-        if (!animationId && isVisible) {
-            animationId = requestAnimationFrame(animate);
-        }
-    };
-    
-    // Start animation right away
-    startAnimation();
-    
-    // Handle page visibility changes
-    document.addEventListener('visibilitychange', () => {
-        isPageVisible = !document.hidden;
-        if (isPageVisible && isVisible) {
-            startAnimation();
-        } else if (animationId) {
-            cancelAnimationFrame(animationId);
-            animationId = null;
-        }
-    });
-    
-    // Cleanup on page unload
-    window.addEventListener('beforeunload', () => {
-        if (animationId) {
-            cancelAnimationFrame(animationId);
-            animationId = null;
-        }
-    });
-
-    // Event delegation for hover states - more efficient
-    document.body.addEventListener('mouseover', (e) => {
-        const target = e.target.closest('a, button, .interactive-element, .framer-card, .service-card, .nav-item, .interactive-card');
-        if (target) {
-            ring.style.transform = 'translate(-50%, -50%) scale(1.8)';
-            ring.style.borderColor = 'rgba(25,118,210,1)';
-            dot.style.opacity = '0.85';
-        }
-    }, { passive: true });
-
-    document.body.addEventListener('mouseout', (e) => {
-        const target = e.target.closest('a, button, .interactive-element, .framer-card, .service-card, .nav-item, .interactive-card');
-        if (target) {
-            ring.style.transform = 'translate(-50%, -50%) scale(1)';
-            ring.style.borderColor = 'rgba(25,118,210,0.9)';
-            dot.style.opacity = '1';
-        }
-    }, { passive: true });
-
-    // Adaptive contrast (throttled)
-    let contrastFrame = 0;
-    const updateContrast = () => {
-        if (Date.now() - contrastFrame < 100) return; // Throttle to 10fps
-        contrastFrame = Date.now();
-        
-        const el = document.elementFromPoint(mouseX, mouseY);
-        if (!el) return;
-        
-        const bg = window.getComputedStyle(el).backgroundColor;
-        const match = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
-        
-        if (match) {
-            const r = parseInt(match[1], 10);
-            const g = parseInt(match[2], 10);
-            const b = parseInt(match[3], 10);
-            // Use proper luminance calculation (ITU-R BT.709)
-            const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-            
-            // Dark background - use light cursor
-            if (luminance < 128) {
-                ring.style.borderColor = 'rgba(255,255,255,0.9)';
-                dot.style.background = 'rgba(255,255,255,0.95)';
-                ring.style.filter = 'drop-shadow(0 0 4px rgba(0,0,0,0.4))';
-            } else {
-                // Light background - use dark cursor
-                ring.style.borderColor = 'rgba(25,118,210,0.9)';
-                dot.style.background = 'rgba(25,118,210,1)';
-                ring.style.filter = 'drop-shadow(0 0 3px rgba(25,118,210,0.35))';
-            }
-        }
-    };
-
-    document.addEventListener('mousemove', updateContrast, { passive: true });
+    window.addEventListener('resize', debounce(forceMobileReadable, 150));
 }
 
 // Magnetic Elements Effect (Optimized)
@@ -740,32 +518,6 @@ function initPerformanceOptimizations() {
     });
 }
 
-    // Utility: inline style fallback to enforce overlay if CSS is stale/not applied
-    function enforceMenuOverlayStyles(open) {
-        if (!menu) return;
-        if (open) {
-            // Force overlay properties inline to bypass stale caches
-            menu.style.position = 'fixed';
-            menu.style.top = '0';
-            menu.style.left = '0';
-            menu.style.width = '100vw';
-            menu.style.height = '100vh';
-            menu.style.display = 'flex';
-            menu.style.flexDirection = 'column';
-            menu.style.background = 'rgba(0,0,0,0.98)';
-            menu.style.backdropFilter = 'blur(12px)';
-            menu.style.webkitBackdropFilter = 'blur(12px)';
-            menu.style.zIndex = '9999999';
-            menu.style.padding = '90px 16px 32px 16px';
-            menu.style.overflowY = 'auto';
-            menu.style.pointerEvents = 'auto';
-        } else {
-            // Clean back to stylesheet control
-            menu.removeAttribute('style');
-        }
-    }
-
-    // Toggle function
 function initUtilityFunctions() {
     // Note: debounce and throttle are now defined at top level
     // This function kept for other utility initializations
@@ -780,10 +532,6 @@ function initUtilityFunctions() {
             rect.right <= (window.innerWidth || document.documentElement.clientWidth)
         );
     };
-            // Ensure overlay is visible even if CSS is cached
-            if (window.getComputedStyle(menu).display === 'none') {
-                enforceMenuOverlayStyles(true);
-            }
     
     // Get scroll percentage
     window.getScrollPercentage = function() {
@@ -794,7 +542,6 @@ function initUtilityFunctions() {
     
     // Copy text to clipboard
     window.copyToClipboard = function(text) {
-            enforceMenuOverlayStyles(false);
         if (navigator.clipboard) {
             return navigator.clipboard.writeText(text);
         } else {
@@ -1267,26 +1014,4 @@ function initVantaRings() {
     });
 }
 
-// Initialize Vanta RINGS when DOM is ready
-// Use a slight delay to ensure all scripts are loaded
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(initVantaRings, 500); // Wait 500ms after DOM ready
-    });
-} else {
-    setTimeout(initVantaRings, 500); // Already loaded, wait 500ms
-}
-
-// Lightweight mobile animation guard
-document.addEventListener('DOMContentLoaded', () => {
-    if (window.innerWidth < 768) {
-        document.body.classList.add('mobile-perf-mode');
-        // Slow down any dotlottie instances slightly
-        try {
-            const lotties = document.querySelectorAll('dotlottie-wc');
-            lotties.forEach(el => {
-                if (el.setSpeed) el.setSpeed(0.85);
-            });
-        } catch(_) {}
-    }
-});
+// (Vanta is initialized inside the main DOMContentLoaded init below)

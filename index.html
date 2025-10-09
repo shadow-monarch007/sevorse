@@ -1459,7 +1459,7 @@
             </div>
             
             <!-- Mobile Menu Overlay - Optimized Menu Bar -->
-            <div id="mobile-menu" class="nav-menu hidden">
+            <div id="mobile-menu" class="nav-menu hidden md:hidden fixed inset-0 z-[99999] bg-[#0a0f1f]/95 backdrop-blur-lg px-6 pt-24 pb-10 overflow-y-auto transition-all duration-300">
                 <!-- Main Navigation Links -->
                 <a href="#home" class="mobile-nav-item px-6 py-4 text-white text-lg font-medium hover:bg-white/10 active:bg-white/20 transition-all duration-200 rounded-lg border-b border-white/5 block">Home</a>
                 <a href="#services" class="mobile-nav-item px-6 py-4 text-white text-lg font-medium hover:bg-white/10 active:bg-white/20 transition-all duration-200 rounded-lg border-b border-white/5 block">Services</a>
@@ -2600,7 +2600,39 @@
 
     
     <!-- Scripts -->
-    <script src="main.js?v=20251008-1"></script>
+        <script src="main.js?v=20251008-1"></script>
+
+        <!-- Inline fallback: ensure pricing button and modal are always operable; safe if main.js already handles it -->
+        <style>
+            #pricing-robot { z-index: 99999 !important; }
+            #pricing-modal { z-index: 100000 !important; }
+        </style>
+        <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const robot = document.getElementById('pricing-robot');
+            const modal = document.getElementById('pricing-modal');
+            const closeBtn = document.getElementById('close-pricing-modal');
+            if (robot && modal) {
+                robot.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    modal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                    robot.style.display = 'none';
+                });
+            }
+            function fallbackClose() {
+                if (!modal) return;
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+                if (robot) robot.style.display = '';
+            }
+            if (closeBtn) closeBtn.addEventListener('click', fallbackClose);
+            if (modal) {
+                modal.addEventListener('click', (e) => { if (e.target === modal) fallbackClose(); });
+            }
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fallbackClose(); });
+        });
+        </script>
     
     <!-- DotLottie Web Component for Animations -->
     <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.8.1/dist/dotlottie-wc.js" type="module"></script>
