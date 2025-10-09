@@ -2315,8 +2315,8 @@
 
     <!-- Pricing Modal - New Layout: Membership Top, Packages Below with Lock -->
     <div id="pricing-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="pricing-modal-title">
-        <div class="absolute inset-0 bg-black"></div>
-        <div class="relative z-10 flex items-center justify-center text-white p-2 md:p-4 pricing-modal-content">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-sm"></div>
+        <div class="relative z-10 w-full h-full overflow-y-auto text-white p-2 md:p-4 pricing-modal-content">
             <!-- Animated background energy waves -->
             <div class="pricing-bg">
                 <div class="wave-layer-1"></div>
@@ -2324,8 +2324,8 @@
                 <div class="wave-glow"></div>
             </div>
             
-            <!-- Pricing Wrapper - Contains Everything -->
-            <div class="pricing-wrap">
+            <!-- Pricing Wrapper - Contains Everything - Now Scrollable -->
+            <div class="pricing-wrap" style="max-height: none; overflow: visible; min-height: min-content;">
                 <!-- Top bar -->
                 <div class="flex items-center justify-between flex-shrink-0 mb-3 md:mb-4">
                     <div class="flex items-center gap-2 md:gap-4">

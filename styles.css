@@ -635,7 +635,7 @@ body.custom-cursor-active *:hover {
   
   #mobile-menu.active {
     display: flex !important;
-    z-index: 9999999 !important; /* Above all */
+    z-index: 9999 !important; /* Below header to keep logo/hamburger visible */
     pointer-events: auto !important;
     background: rgba(0, 0, 0, 0.98) !important;
     backdrop-filter: blur(15px) !important;
@@ -657,10 +657,12 @@ body.custom-cursor-active *:hover {
     text-align: center !important;
   }
   
-  /* Ensure navbar has sane stacking without eclipsing overlay */
+  /* Ensure navbar stays above mobile menu */
   nav,
-  header {
-    z-index: 10000 !important;
+  header,
+  #mobile-menu-btn {
+    z-index: 99999 !important;
+    position: relative !important;
   }
   
   /* Floating pricing button - ALWAYS visible on all sections */
@@ -715,8 +717,20 @@ body.custom-cursor-active *:hover {
     min-height: -webkit-fill-available;
     display: flex;
     align-items: center;
-    padding-top: 6rem !important; /* Move content up closer to navbar */
+    padding-top: 6rem !important;
     padding-bottom: 2rem !important;
+    /* Disable heavy background animations on mobile for instant load */
+    background-attachment: scroll !important;
+  }
+  
+  /* Kill expensive animations on mobile load */
+  .ai-core-container *,
+  .energy-ring,
+  .tesseract-cube,
+  .particle,
+  .mini-energy-core {
+    animation-duration: 8s !important; /* Slower = less CPU */
+    will-change: auto !important;
   }
   
   #home .grid {
@@ -1062,20 +1076,25 @@ body.custom-cursor-active *:hover {
   .pricing-wrap {
     padding: 0.5rem !important;
     max-height: none !important;
-    overflow: visible !important; /* NO scrollbar */
+    overflow: visible !important;
     width: 100% !important;
     display: flex !important;
     flex-direction: column !important;
     will-change: auto !important;
-    transform: translateZ(0); /* GPU acceleration */
   }
   
-  /* Pricing modal - INSTANT load */
+  /* Pricing modal - Allow natural scrolling, reduce animation cost */
   #pricing-modal {
-    overflow: visible !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
     animation: none !important;
-    transition: opacity 0.1s ease !important; /* Instant fade */
-    transform: translateZ(0); /* GPU acceleration */
+    transition: opacity 0.15s ease !important;
+  }
+  
+  #pricing-modal .pricing-modal-content {
+    display: block !important;
+    min-height: 100vh !important;
+    overflow: visible !important;
   }
   
   /* Packages row - vertical stacking on mobile */
